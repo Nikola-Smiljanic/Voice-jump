@@ -1,8 +1,6 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include "xyseriesiodevice.h"
-
 #include <QMainWindow>
 #include <QtMultimedia>
 #include <QtMultimediaWidgets>
@@ -13,8 +11,18 @@
 #include <QGraphicsScene>
 #include <QPainter>
 #include <QStyleOption>
+#include <QDebug>
 
+#include <fftw3.h>
+#include <vector>
+#include <string>
 #include <iostream>
+#include <cfloat>
+
+#define REAL 0
+#define IMAG 1
+#define SCALING_MAG 10
+
 
 namespace Ui {
 class MainWindow;
@@ -27,28 +35,26 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
+
     QGraphicsScene *scene;
     QAudioRecorder *recorder;
-    int x_count = 0;
+
+    //  brojac poziva funkcije processAudioBuffer
+    unsigned int buffer_count = 0;
+    std::vector<double> recent_magnitudes;
 public slots:
-    void processBuffer(const QAudioBuffer &buffer);
+    void processAudioBuffer(QAudioBuffer buffer);
 
 private slots:
 
     void on_cleanPushButton_clicked();
 
-    void on_rec1PushButton_clicked();
+    void on_recordPushButton_clicked();
 
-    void on_stop1PushButton_clicked();
-
-    void on_rec2PushButton_clicked();
-
-    void on_stop2PushButton_clicked();
+    void on_stopPushButton_clicked();
 
 private:
     Ui::MainWindow *ui;
-
-    XYSeriesIODevice *m_device = nullptr;
     QAudioInput *m_audioInput = nullptr;
 
 };
