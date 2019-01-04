@@ -25,17 +25,13 @@
 #define SCALING_MAG 20
 #define LINE_EPOCH 31
 
-class Player;
-
-extern Player *player;
-
 class Recorder : public QObject
 {
     Q_OBJECT
 public:
     Recorder(QObject *parent, QGraphicsScene *scene);
-    void startRecording();
-    void stopRecording();
+    void startRecording(double x, double y);
+    std::vector<QPoint> stopRecording();
     bool get_is_recording();
     void set_is_recording(bool b);
 public slots:
@@ -50,6 +46,9 @@ private:
     std::vector<QPoint> line_dots;
     QGraphicsScene *m_scene;
     double start_magnitude;
+
+    double player_x = 0;
+    double player_y = 0;
 };
 
 #endif // RECORDER_H

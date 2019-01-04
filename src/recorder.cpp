@@ -1,5 +1,4 @@
 #include "recorder.h"
-#include "player.h"
 
 Recorder::Recorder(QObject *parent = nullptr, QGraphicsScene *scene = nullptr)
 : QObject(parent), m_scene(scene)
@@ -22,13 +21,15 @@ Recorder::Recorder(QObject *parent = nullptr, QGraphicsScene *scene = nullptr)
 
 }
 
-void Recorder::startRecording()
+void Recorder::startRecording(double x, double y)
 {
+    player_x = x;
+    player_y = y;
     recorder->record();
     is_recording = true;
 }
 
-void Recorder::stopRecording()
+std::vector<QPoint> Recorder::stopRecording()
 {
     recorder->stop();
     buffer_count = 0;
@@ -38,6 +39,7 @@ void Recorder::stopRecording()
     for (QPoint point: line_dots){
         m_scene->addLine(point.x(), point.y(), point.x(), point.y()+1, QPen(Qt::yellow, 3));
     }
+    return line_dots;
 }
 
 bool Recorder::get_is_recording()
@@ -124,7 +126,7 @@ void Recorder::processAudioBuffer(QAudioBuffer buffer)
     fftw_destroy_plan(myPlan);
 
     if (buffer_count > 20)
-        m_scene->addLine(player->x() + buffer_count, -start_magnitude*SCALING_MAG+(part_mag_max)*SCALING_MAG, player->x() + buffer_count, -start_magnitude*SCALING_MAG+(part_mag_max)*SCALING_MAG+1, QPen(Qt::cyan, 1));
+        m_scene->addLine(player_x + buffer_count, -start_magnitude*SCALING_MAG+(part_mag_max)*SCALING_MAG, player_x + buffer_count, -start_magnitude*SCALING_MAG+(part_mag_max)*SCALING_MAG+1, QPen(Qt::cyan, 1));
 
     //  pamti se poslednjih 30
     if (buffer_count > 30)
@@ -141,7 +143,7 @@ void Recorder::processAudioBuffer(QAudioBuffer buffer)
     if (buffer_count == 20)
         start_magnitude = average_magn;
     if (buffer_count > 20)
-        m_scene->addLine(player->x() + buffer_count, -start_magnitude*SCALING_MAG+average_magn*SCALING_MAG, player->x() + buffer_count, -start_magnitude*SCALING_MAG+average_magn*SCALING_MAG+1, QPen(Qt::darkBlue, 2));
+        m_scene->addLine(player_x + buffer_count, -start_magnitude*SCALING_MAG+average_magn*SCALING_MAG, player_x + buffer_count, -start_magnitude*SCALING_MAG+average_magn*SCALING_MAG+1, QPen(Qt::darkBlue, 2));
 
     // dodaje se nova tacka za liniju kretanja
 
@@ -150,7 +152,7 @@ void Recorder::processAudioBuffer(QAudioBuffer buffer)
     qDebug() << "tacka za liniju br: " << i_max_magn_line;
 
     if (buffer_count > 30 && buffer_count % LINE_EPOCH == 0 ){
-        line_dots.push_back(QPoint(player->x() + buffer_count - i_max_magn_line, max_magn_line*SCALING_MAG-start_magnitude*SCALING_MAG));
+        line_dots.push_back(QPoint(player_x + buffer_count - i_max_magn_line, max_magn_line*SCALING_MAG-start_magnitude*SCALING_MAG));
         recent_avg_magn.resize(0);
     }
 
