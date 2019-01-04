@@ -12,10 +12,13 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
         main.cpp \
-        mainwindow.cpp
+    player.cpp \
+    recorder.cpp \
+    obstacle.cpp
 
 HEADERS += \
-        mainwindow.h
+    player.h \
+    recorder.h \
+    obstacle.h
 
-FORMS += \
-        mainwindow.ui
+FORMS +=

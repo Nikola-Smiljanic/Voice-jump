@@ -1,19 +1,9 @@
-#include "mainwindow.h"
-#include "ui_mainwindow.h"
+#include "recorder.h"
+#include "player.h"
 
-
-MainWindow::MainWindow(QWidget *parent) :
-    QMainWindow(parent),
-    ui(new Ui::MainWindow)
+Recorder::Recorder(QObject *parent = nullptr, QGraphicsScene *scene = nullptr)
+: QObject(parent), m_scene(scene)
 {
-    ui->setupUi(this);
-
-    //  inicijalizuje se scena
-    scene = new QGraphicsScene(this);
-    ui->view->setScene(scene);
-
-    //  inicijalizuje se objekat za snimanje zvuka
-
     recorder = new QAudioRecorder();
     QAudioProbe *probe = new QAudioProbe;
 
@@ -28,41 +18,41 @@ MainWindow::MainWindow(QWidget *parent) :
 
     //  funkcija processBuffer se poziva kad recorder ima nove podatke
     probe->setSource(recorder);
-    connect(probe, SIGNAL(audioBufferProbed(QAudioBuffer)), this, SLOT(processAudioBuffer(QAudioBuffer)));
+    QObject::connect(probe, SIGNAL(audioBufferProbed(QAudioBuffer)), this, SLOT(processAudioBuffer(QAudioBuffer)));
 
 }
 
-MainWindow::~MainWindow()
+void Recorder::startRecording()
 {
-    delete ui;
-}
-
-void MainWindow::on_recordPushButton_clicked()
-{
-    // pocinje snimanje zvuka
     recorder->record();
+    is_recording = true;
 }
 
-void MainWindow::on_stopPushButton_clicked()
+void Recorder::stopRecording()
 {
-    // zaustavlja se snimanje zvuka
     recorder->stop();
-}
-
-void MainWindow::on_cleanPushButton_clicked()
-{
-    // brisu se objekti sa scene
-    scene->clear();
-    scene->views()[0]->update();
-
-    //  brojac se vraca na pocetnu vrednost
     buffer_count = 0;
+    recent_magnitudes.resize(0);
+    is_recording = false;
+    start_magnitude = 0;
+    for (QPoint point: line_dots){
+        m_scene->addLine(point.x(), point.y(), point.x(), point.y()+1, QPen(Qt::yellow, 3));
+    }
 }
 
-//  funkcija processBuffer se poziva kad recorder ima nove podatke i iscrtava visinu tona
-void MainWindow::processAudioBuffer(QAudioBuffer buffer)
+bool Recorder::get_is_recording()
 {
-    std::cout << "----------------------- QAudioBuffer broj " << buffer_count << " ------------------------------ "   << std::endl;
+    return is_recording;
+}
+
+void Recorder::set_is_recording(bool b)
+{
+    is_recording = b;
+}
+
+void Recorder::processAudioBuffer(QAudioBuffer buffer)
+{
+    qDebug() << "-----------------------QAudioBuffer br  " << buffer_count << " ------------------------------ ";
 
     int n = buffer.frameCount();
     QAudioBuffer::S16U *frames = buffer.data<QAudioBuffer::S16U>();
@@ -100,7 +90,7 @@ void MainWindow::processAudioBuffer(QAudioBuffer buffer)
     int all_magn_max_index = 0;
 
     double part_mag_max = 0;
-    double part_mag_min = DBL_MAX;
+    double part_mag_min = 2000;
 
 
 //    za prikaz svih vrednosti iz izlaza fft:
@@ -132,36 +122,54 @@ void MainWindow::processAudioBuffer(QAudioBuffer buffer)
     }
 
     fftw_destroy_plan(myPlan);
-    // iscrtava se razlika iz ovog bafera
-    scene->addLine(buffer_count, -(part_mag_max-part_mag_min)*SCALING_MAG, buffer_count, -(part_mag_max-part_mag_min)*SCALING_MAG+1, QPen(Qt::cyan, 1));
 
-    //  azurira se poslednjih 30 razlika
+    if (buffer_count > 20)
+        m_scene->addLine(player->x() + buffer_count, -start_magnitude*SCALING_MAG+(part_mag_max)*SCALING_MAG, player->x() + buffer_count, -start_magnitude*SCALING_MAG+(part_mag_max)*SCALING_MAG+1, QPen(Qt::cyan, 1));
+
+    //  pamti se poslednjih 30
     if (buffer_count > 30)
         recent_magnitudes.erase(recent_magnitudes.begin());
-    recent_magnitudes.push_back(part_mag_max-part_mag_min);
+    recent_magnitudes.push_back(part_mag_max);
 
-    //  iscrtava se prosek poslednjih 30 razlika
+
+    //  iscrtava se prosek poslednjih 30
     double average_magn = std::accumulate(recent_magnitudes.begin(), recent_magnitudes.end(), 0.0);
     average_magn /= recent_magnitudes.size();
 
-    scene->addLine(buffer_count, -average_magn*SCALING_MAG, buffer_count, -average_magn*SCALING_MAG+1, QPen(Qt::darkBlue, 2));
+    recent_avg_magn.push_back(average_magn);
+
+    if (buffer_count == 20)
+        start_magnitude = average_magn;
+    if (buffer_count > 20)
+        m_scene->addLine(player->x() + buffer_count, -start_magnitude*SCALING_MAG+average_magn*SCALING_MAG, player->x() + buffer_count, -start_magnitude*SCALING_MAG+average_magn*SCALING_MAG+1, QPen(Qt::darkBlue, 2));
+
+    // dodaje se nova tacka za liniju kretanja
+
+    double max_magn_line = *std::max_element(recent_avg_magn.begin(), recent_avg_magn.end());
+    int i_max_magn_line = recent_avg_magn.end() -std::max_element(recent_avg_magn.begin(), recent_avg_magn.end());
+    qDebug() << "tacka za liniju br: " << i_max_magn_line;
+
+    if (buffer_count > 30 && buffer_count % LINE_EPOCH == 0 ){
+        line_dots.push_back(QPoint(player->x() + buffer_count - i_max_magn_line, max_magn_line*SCALING_MAG-start_magnitude*SCALING_MAG));
+        recent_avg_magn.resize(0);
+    }
 
 
     //  Formula za frekvenciju:  freq = i_max * sampleRate / n
     //  ne radi dobro
     double frequency =  ((double)buffer.format().sampleRate())*all_magn_max_index/(n); //*(M_PI/2); ako je u rad/s
 
-    std::cout << "Frekvencija?: \t"   << frequency  << std::endl;
-    std::cout << "Maksimun i minimum na manjem delu: \t" << part_mag_max << "\t" << part_mag_min << std::endl;
-    std::cout << "Maksimum svih:       \t"   << all_magnitudes_max   << std::endl;
-    std::cout << "Indeks maksimuma:    \t"   << all_magn_max_index   << std::endl;
+    qDebug() << "Frekvencija?: \t"   << frequency;
+    qDebug() << "Maksimun i minimum na manjem delu: \t" << part_mag_max << "\t" << part_mag_min;
+    qDebug() << "Maksimum svih       \t"   << all_magnitudes_max;
+    qDebug() << "Indeks maksimuma    \t"   << all_magn_max_index;
 
-    std::cout << "sample rate   \t"   << buffer.format().sampleRate() << std::endl;
-    std::cout << "chanel count  \t"   << buffer.format().channelCount() << std::endl;
-    std::cout << "byteCount     \t" << buffer.byteCount() << std::endl;
-    std::cout << "sample count  \t" << buffer.sampleCount() << std::endl;
-    std::cout << "duration      \t" << buffer.duration() <<std::endl;
-    std::cout << "frame count   \t" << buffer.frameCount() << std::endl;
+    qDebug() << "sample rate   \t"   << buffer.format().sampleRate();
+    qDebug() << "chanel count  \t"   << buffer.format().channelCount();
+    qDebug() << "byteCount     \t" << buffer.byteCount();
+    qDebug() << "sample count  \t" << buffer.sampleCount();
+    qDebug() << "duration      \t" << buffer.duration();
+    qDebug() << "frame count   \t" << buffer.frameCount();
 
     buffer_count++;
 
