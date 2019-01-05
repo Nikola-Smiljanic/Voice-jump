@@ -30,3 +30,10 @@
 *.exe
 *.out
 *.app
+
+# QT files
+*.user
+*-Debug
+*.pro.user*
+voice_jump*
+*.user
