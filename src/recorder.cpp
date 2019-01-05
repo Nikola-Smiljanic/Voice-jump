@@ -8,10 +8,10 @@ Recorder::Recorder(QObject *parent = nullptr, QGraphicsScene *scene = nullptr)
 
     QAudioEncoderSettings audioSettings;
 //    u slucaju da mikrofon ne prepoznaje zakomentarisati liniju ispod
-//    audioSettings.setCodec("audio/PCM");
+    audioSettings.setCodec("audio/PCM");
     audioSettings.setQuality(QMultimedia::HighQuality);
 //    u slucaju da mikrofon ne prepoznaje zakomentarisati liniju ispod
-//    recorder->setContainerFormat("mp3");
+    recorder->setContainerFormat("mp3");
     recorder->setEncodingSettings(audioSettings);
 
     //recorder->setOutputLocation(QUrl::fromLocalFile("proba_qt_snimak.mp3"));

@@ -4,6 +4,7 @@ std::vector<QPoint> test;
 int sizeOfTest;
 int currentPosition;
 int skip = 20;
+
 Player::Player(QGraphicsView *view, QGraphicsScene *scene = nullptr)
     : m_view(view), m_scene(scene)
 {
