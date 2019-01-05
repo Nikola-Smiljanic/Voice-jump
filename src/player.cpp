@@ -3,7 +3,7 @@
 std::vector<QPoint> test;
 int sizeOfTest;
 int currentPosition;
-
+int skip = 20;
 Player::Player(QGraphicsView *view, QGraphicsScene *scene = nullptr)
     : m_view(view), m_scene(scene)
 {
@@ -24,7 +24,7 @@ void Player::keyPressEvent(QKeyEvent *event)
         if(!recorder->get_is_recording()){
 //            setPos(x(), y());
             if (currentPosition>0){
-                setPos(test[currentPosition].x(),test[currentPosition].y());
+                setPos(test[currentPosition+skip].x(),test[currentPosition+skip].y());
                 currentPosition--;
             }
             else{
@@ -38,7 +38,7 @@ void Player::keyPressEvent(QKeyEvent *event)
         if(!recorder->get_is_recording()){
             if (currentPosition<sizeOfTest){
 //            setPos(x()+10, y());
-                setPos(test[currentPosition].x(),test[currentPosition].y());
+                setPos(test[currentPosition+skip].x(),test[currentPosition+skip].y());
                 currentPosition++;
             }
             else{

@@ -37,9 +37,16 @@ std::vector<QPoint> Recorder::stopRecording()
     recent_magnitudes.resize(0);
     is_recording = false;
     start_magnitude = 0;
+    // buffer na pocetku unosa je los pa ga ignorisemo
+    int skip = 20;
+    int _ = 0;
     for (QPoint point: line_dots){
-        m_scene->addLine(point.x(), point.y(), point.x(), point.y()+1, QPen(Qt::yellow, 3));
-
+        if (_ < skip){
+        _++;
+        }
+        else{
+            m_scene->addLine(point.x(), point.y(), point.x(), point.y()+1, QPen(Qt::yellow, 3));
+        }
     }
     return line_dots;
 }
