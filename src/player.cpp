@@ -1,5 +1,9 @@
 #include "player.h"
 
+std::vector<QPoint> test;
+int sizeOfTest;
+int currentPosition;
+
 Player::Player(QGraphicsView *view, QGraphicsScene *scene = nullptr)
     : m_view(view), m_scene(scene)
 {
@@ -17,14 +21,30 @@ Player::Player(QGraphicsView *view, QGraphicsScene *scene = nullptr)
 void Player::keyPressEvent(QKeyEvent *event)
 {
     if(event->key() == Qt::Key_Left){
-        if(!recorder->get_is_recording())
-            setPos(x()-10, y());
+        if(!recorder->get_is_recording()){
+//            setPos(x(), y());
+            if (currentPosition>0){
+                setPos(test[currentPosition].x(),test[currentPosition].y());
+                currentPosition--;
+            }
+            else{
+                qDebug() << "ne moze vise levo";
 
+            }
+        }
     }
 
     else if(event->key() == Qt::Key_Right){
-        if(!recorder->get_is_recording())
-            setPos(x()+10, y());
+        if(!recorder->get_is_recording()){
+            if (currentPosition<sizeOfTest){
+//            setPos(x()+10, y());
+                setPos(test[currentPosition].x(),test[currentPosition].y());
+                currentPosition++;
+            }
+            else{
+                qDebug() << "ne moze vise desno";
+            }
+        }
         if( ((int)x()) % VIEW_WIDTH > 0 && ((int)x()) % VIEW_WIDTH < 11){
             qDebug() << "nove prepreke";
             drawObsticles(((int)x())/VIEW_WIDTH + 1);
@@ -39,7 +59,9 @@ void Player::keyPressEvent(QKeyEvent *event)
 
     else if(event->key() == Qt::Key_S){
         qDebug() << "stop";
-        recorder->stopRecording();
+        test = recorder->stopRecording();
+        sizeOfTest =  test.size();
+        currentPosition = 0;
     }
 
     // popraviti da view prati igraca

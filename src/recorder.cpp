@@ -7,10 +7,11 @@ Recorder::Recorder(QObject *parent = nullptr, QGraphicsScene *scene = nullptr)
     QAudioProbe *probe = new QAudioProbe;
 
     QAudioEncoderSettings audioSettings;
-    audioSettings.setCodec("audio/PCM");
+//    u slucaju da mikrofon ne prepoznaje zakomentarisati liniju ispod
+//    audioSettings.setCodec("audio/PCM");
     audioSettings.setQuality(QMultimedia::HighQuality);
-
-    recorder->setContainerFormat("mp3");
+//    u slucaju da mikrofon ne prepoznaje zakomentarisati liniju ispod
+//    recorder->setContainerFormat("mp3");
     recorder->setEncodingSettings(audioSettings);
 
     //recorder->setOutputLocation(QUrl::fromLocalFile("proba_qt_snimak.mp3"));
@@ -38,6 +39,7 @@ std::vector<QPoint> Recorder::stopRecording()
     start_magnitude = 0;
     for (QPoint point: line_dots){
         m_scene->addLine(point.x(), point.y(), point.x(), point.y()+1, QPen(Qt::yellow, 3));
+
     }
     return line_dots;
 }
@@ -151,10 +153,10 @@ void Recorder::processAudioBuffer(QAudioBuffer buffer)
     int i_max_magn_line = recent_avg_magn.end() -std::max_element(recent_avg_magn.begin(), recent_avg_magn.end());
     qDebug() << "tacka za liniju br: " << i_max_magn_line;
 
-    if (buffer_count > 30 && buffer_count % LINE_EPOCH == 0 ){
-        line_dots.push_back(QPoint(player_x + buffer_count - i_max_magn_line, max_magn_line*SCALING_MAG-start_magnitude*SCALING_MAG));
-        recent_avg_magn.resize(0);
-    }
+//    if (buffer_count > 30 && buffer_count % LINE_EPOCH == 0 ){
+    line_dots.push_back(QPoint(player_x + buffer_count - i_max_magn_line, max_magn_line*SCALING_MAG-start_magnitude*SCALING_MAG));
+    recent_avg_magn.resize(0);
+//    }
 
 
     //  Formula za frekvenciju:  freq = i_max * sampleRate / n
