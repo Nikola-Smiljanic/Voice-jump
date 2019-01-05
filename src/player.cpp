@@ -24,7 +24,7 @@ void Player::keyPressEvent(QKeyEvent *event)
         if(!recorder->get_is_recording()){
 //            setPos(x(), y());
             if (currentPosition>0){
-                setPos(test[currentPosition+skip].x(),test[currentPosition+skip].y());
+                setPos(test[currentPosition+skip].x()-20.5,test[currentPosition+skip].y()-15.5);
                 currentPosition--;
             }
             else{
@@ -36,9 +36,9 @@ void Player::keyPressEvent(QKeyEvent *event)
 
     else if(event->key() == Qt::Key_Right){
         if(!recorder->get_is_recording()){
-            if (currentPosition<sizeOfTest){
+            if (currentPosition<sizeOfTest-skip){
 //            setPos(x()+10, y());
-                setPos(test[currentPosition+skip].x(),test[currentPosition+skip].y());
+                setPos(test[currentPosition+skip].x()-20.5,test[currentPosition+skip].y()-15.5);
                 currentPosition++;
             }
             else{
