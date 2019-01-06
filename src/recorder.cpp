@@ -48,8 +48,9 @@ std::vector<QPoint> Recorder::stopRecording()
             m_scene->addLine(point.x(), point.y(), point.x(), point.y()+1, QPen(Qt::red, 3));
         }
     }
-    _=0;
-    return line_dots;
+    std::vector<QPoint> move_dots = line_dots;
+    line_dots.resize(0);
+    return move_dots;
 }
 
 bool Recorder::get_is_recording()
@@ -161,10 +162,8 @@ void Recorder::processAudioBuffer(QAudioBuffer buffer)
     int i_max_magn_line = recent_avg_magn.end() -std::max_element(recent_avg_magn.begin(), recent_avg_magn.end());
     qDebug() << "tacka za liniju br: " << i_max_magn_line;
 
-//    if (buffer_count > 30 && buffer_count % LINE_EPOCH == 0 ){
     line_dots.push_back(QPoint(player_x + buffer_count - i_max_magn_line, max_magn_line*SCALING_MAG-start_magnitude*SCALING_MAG));
     recent_avg_magn.resize(0);
-//    }
 
 
     //  Formula za frekvenciju:  freq = i_max * sampleRate / n
