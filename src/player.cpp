@@ -81,6 +81,7 @@ void Player::keyPressEvent(QKeyEvent *event)
         }
         else{
             testTmp = recorder->stopRecording();
+            currentPosition = test.size();
             test.insert(test.end(),testTmp.begin(),testTmp.end());
             sizeOfTest =  test.size();
         }
