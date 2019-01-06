@@ -48,6 +48,7 @@ std::vector<QPoint> Recorder::stopRecording()
             m_scene->addLine(point.x(), point.y(), point.x(), point.y()+1, QPen(Qt::red, 3));
         }
     }
+    _=0;
     return line_dots;
 }
 

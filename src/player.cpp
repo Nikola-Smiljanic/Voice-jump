@@ -2,8 +2,10 @@
 
 std::vector<QPoint> test;
 int sizeOfTest;
-int currentPosition;
+int currentPosition = 0;
 int skip = 20;
+bool start = true;
+
 Player::Player(QGraphicsView *view, QGraphicsScene *scene = nullptr)
     : m_view(view), m_scene(scene)
 {
@@ -59,14 +61,19 @@ void Player::keyPressEvent(QKeyEvent *event)
 
     else if(event->key() == Qt::Key_Space){
         qDebug() << "space";
-        recorder->startRecording(x(), y());
+        if(start){
+            recorder->startRecording(x(), y());
+        }
+        else{
+            start = false;
+            recorder->startRecording(test[currentPosition+skip].x()-20.5,test[currentPosition+skip].y()-15.5);
+        }
     }
 
     else if(event->key() == Qt::Key_S){
         qDebug() << "stop";
         test = recorder->stopRecording();
         sizeOfTest =  test.size();
-        currentPosition = 0;
     }
 
     // popraviti da view prati igraca
