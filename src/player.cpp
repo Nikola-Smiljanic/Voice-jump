@@ -12,6 +12,9 @@ Player::Player(QGraphicsView *view, QGraphicsScene *scene = nullptr)
     this->setRect(0, 0, 50, 50);
     this->setBrush(QBrush(Qt::red));
 
+    //  igrac je ispred ostalih objekata na sceni
+    this->setZValue(1);
+
     //  igrac se stavlja u fokus
     this->setFlag(QGraphicsItem::ItemIsFocusable);
     this->setFocus();
@@ -26,6 +29,7 @@ void Player::keyPressEvent(QKeyEvent *event)
             if (currentPosition>0){
                 setPos(test[currentPosition+skip].x()-20.5,test[currentPosition+skip].y()-15.5);
                 currentPosition--;
+                m_view->horizontalScrollBar()->setValue(m_view->horizontalScrollBar()->value() - 1);
             }
             else{
                 qDebug() << "ne moze vise levo";
@@ -40,14 +44,15 @@ void Player::keyPressEvent(QKeyEvent *event)
 //            setPos(x()+10, y());
                 setPos(test[currentPosition+skip].x()-20.5,test[currentPosition+skip].y()-15.5);
                 currentPosition++;
+                m_view->horizontalScrollBar()->setValue(m_view->horizontalScrollBar()->value() + 1);
             }
             else{
                 qDebug() << "ne moze vise desno";
             }
         }
-        if( ((int)x()) % VIEW_WIDTH > 0 && ((int)x()) % VIEW_WIDTH < 11){
-            qDebug() << "nove prepreke";
+        if( ((int)x()) / VIEW_WIDTH ==  new_obsticales_group_count){
             drawObsticles(((int)x())/VIEW_WIDTH + 1);
+            new_obsticales_group_count++;
         }
 
     }
@@ -69,7 +74,7 @@ void Player::keyPressEvent(QKeyEvent *event)
 }
 
 void Player::drawObsticles(int count){
-    //width = 1000;
+
     int num_of_obsticles = 3;
     for (int i=1; i<=num_of_obsticles; i++){
         Obstacle *o = new Obstacle(count*VIEW_WIDTH + i*100 + i*400/(num_of_obsticles-1), 0);
@@ -79,6 +84,7 @@ void Player::drawObsticles(int count){
     m_scene->addLine(count*VIEW_WIDTH-100, 0, (count+1)*VIEW_WIDTH, 0, QPen(Qt::black, 1));
 
 }
+
 
 
 

@@ -18,7 +18,7 @@ int main(int argc, char *argv[])
 
     //  inicijalizuje se scena
     QGraphicsScene scene;
-    scene.setSceneRect(0, -200, 900, 400);
+    scene.setSceneRect(-1600, -300, 4000, 800);
 
     //  kreira se pogled za scenu
     QGraphicsView view(&scene);
@@ -26,16 +26,16 @@ int main(int argc, char *argv[])
     Player *player = new Player(&view, &scene);
     recorder = new Recorder(&scene, &scene);
 
-    scene.addLine(0, 0, 1000, 0, QPen(Qt::black, 1));
+    scene.addLine(0, 0, VIEW_WIDTH, 0, QPen(Qt::black, 1));
 
-    // ne radi to sto treba
     scene.addItem(player);
-    view.centerOn(player);
+
     player->drawObsticles(0);
     view.setWindowTitle("voice jump");
-    view.resize(VIEW_WIDTH, 500);
-    view.scale(1, -1);
 
+    view.scale(1, -1);
+    view.setHorizontalScrollBarPolicy ( Qt::ScrollBarAlwaysOff );
+    view.setVerticalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
     view.show();
 
     return app.exec();

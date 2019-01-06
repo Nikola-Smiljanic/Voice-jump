@@ -21,8 +21,11 @@ public:
     void keyPressEvent(QKeyEvent *event);
     void drawObsticles(int count);
     //void keyReleaseEvent(QKeyEvent *event);
+
+private:
     QGraphicsView *m_view;
     QGraphicsScene *m_scene;
+    int new_obsticales_group_count = 0;
 };
 
 #endif // PLAYER_H
