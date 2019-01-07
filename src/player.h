@@ -11,6 +11,8 @@
 
 #define VIEW_WIDTH 1000
 
+
+
 extern Recorder *recorder;
 //extern QGraphicsScene scene;
 

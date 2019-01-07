@@ -1,12 +1,12 @@
 #include "player.h"
 
-std::vector<QPoint> test;
-std::vector<QPoint> testTmp;
-int sizeOfTest;
-int currentPosition = 0;
-int skip = 20;
-bool start = true;
-bool startDots = true;
+//variables
+std::vector<QPoint> test; // linija kretanja
+std::vector<QPoint> testTmp; // linija kretanja posle prve
+int sizeOfTest; //velicina kretanja
+int currentPosition = 0; //treutna pozicija kretanja
+int skip = 20; // preskacemo prvih 20 zbog loseg ucitavanja zvuka
+bool startDots = true; // za ucitavanje kretanja
 
 Player::Player(QGraphicsView *view, QGraphicsScene *scene = nullptr)
     : m_view(view), m_scene(scene)
@@ -19,7 +19,7 @@ Player::Player(QGraphicsView *view, QGraphicsScene *scene = nullptr)
     //  igrac je ispred ostalih objekata na sceni
     this->setZValue(1);
 
-    //  igrac se stavlja u fokus
+    //  igrac se stavlja u fokus za setPos()
     this->setFlag(QGraphicsItem::ItemIsFocusable);
     this->setFocus();
 
@@ -29,7 +29,6 @@ void Player::keyPressEvent(QKeyEvent *event)
 {
     if(event->key() == Qt::Key_Left){
         if(!recorder->get_is_recording()){
-//            setPos(x(), y());
             if (currentPosition>0){
                 setPos(test[currentPosition+skip].x()-20.5,test[currentPosition+skip].y()-15.5);
                 currentPosition--;
@@ -63,13 +62,7 @@ void Player::keyPressEvent(QKeyEvent *event)
 
     else if(event->key() == Qt::Key_Space){
         qDebug() << "space";
-        if(start){
-            recorder->startRecording(x(), y());
-        }
-        else{
-            start = false;
-            recorder->startRecording(x(), y());
-        }
+        recorder->startRecording(x(), y());
     }
 
     else if(event->key() == Qt::Key_S){
