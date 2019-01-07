@@ -42,10 +42,11 @@ private:
     //  brojac poziva funkcije processAudioBuffer
     unsigned int buffer_count = 0;
     std::vector<double> recent_magnitudes;
-    std::vector<double> recent_avg_magn;
     std::vector<QPoint> line_dots;
     QGraphicsScene *m_scene;
     double start_magnitude;
+
+    double fft_calculation(double input[], int n);
 
     double player_x = 0;
     double player_y = 0;
