@@ -8,10 +8,10 @@ Recorder::Recorder(QObject *parent = nullptr, QGraphicsScene *scene = nullptr)
 
     QAudioEncoderSettings audioSettings;
 //    u slucaju da mikrofon ne prepoznaje zakomentarisati liniju ispod
-    audioSettings.setCodec("audio/PCM");
+//    audioSettings.setCodec("audio/PCM");
     audioSettings.setQuality(QMultimedia::HighQuality);
 //    u slucaju da mikrofon ne prepoznaje zakomentarisati liniju ispod
-     recorder->setContainerFormat("mp3");
+//     recorder-s>setContainerFormat("mp3");
     recorder->setEncodingSettings(audioSettings);
 
     //recorder->setOutputLocation(QUrl::fromLocalFile("proba_qt_snimak.mp3"));
@@ -69,7 +69,7 @@ std::vector<QPoint> Recorder::stopRecording()
 
     //  dodaje se tacka koja na kraju linije vraca igraca do x ose
     if(move_dots.back().y() != 0)
-        move_dots.push_back(QPoint(move_dots.back().x() + 1, 15));
+        move_dots.push_back(QPoint(move_dots.back().x(), 0));
     m_scene->addLine(it->x(), it->y(), move_dots.rbegin()->x(), move_dots.rbegin()->y(), QPen(Qt::red, 2, Qt::DotLine));
 
     return move_dots;
