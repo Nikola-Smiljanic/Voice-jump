@@ -31,9 +31,16 @@ void Player::keyPressEvent(QKeyEvent *event)
     if(event->key() == Qt::Key_Left){
         if(!recorder->get_is_recording()){
             if (currentPosition>0){
-                setPos(test[currentPosition+skip].x()-20.5,test[currentPosition+skip].y()-15.5);
-                currentPosition--;
-                m_view->horizontalScrollBar()->setValue(m_view->horizontalScrollBar()->value() - 1);
+                if (test[currentPosition+skip].y()>0){
+                    setPos(test[currentPosition+skip].x()-20.5,test[currentPosition+skip].y()-15.5);
+                    currentPosition--;
+                    m_view->horizontalScrollBar()->setValue(m_view->horizontalScrollBar()->value() - 1);
+                }
+                else{
+                    setPos(test[currentPosition+skip].x()-20.5,-15.5);
+                    currentPosition--;
+                    m_view->horizontalScrollBar()->setValue(m_view->horizontalScrollBar()->value() - 1);
+                }
             }
             else{
                 qDebug() << "krece se u levo ravno";
@@ -46,10 +53,17 @@ void Player::keyPressEvent(QKeyEvent *event)
     else if(event->key() == Qt::Key_Right){
         if(!recorder->get_is_recording()){
             if (currentPosition<sizeOfTest-skip){
-//            setPos(x()+10, y());
-                setPos(test[currentPosition+skip].x()-20.5,test[currentPosition+skip].y()-15.5);
-                currentPosition++;
-                m_view->horizontalScrollBar()->setValue(m_view->horizontalScrollBar()->value() + 1);
+                if (test[currentPosition+skip].y()>0){
+                    setPos(test[currentPosition+skip].x()-20.5,test[currentPosition+skip].y()-15.5);
+                    currentPosition++;
+                    m_view->horizontalScrollBar()->setValue(m_view->horizontalScrollBar()->value() + 1);
+                 }
+                else{
+                    setPos(test[currentPosition+skip].x()-20.5,-15.5);
+                    currentPosition++;
+                    m_view->horizontalScrollBar()->setValue(m_view->horizontalScrollBar()->value() + 1);
+
+                }
             }
             else{
                 qDebug() << "krece se u desno ravno";
