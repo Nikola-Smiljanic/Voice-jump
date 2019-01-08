@@ -7,6 +7,7 @@ int sizeOfTest; //velicina kretanja
 int currentPosition = 0; //treutna pozicija kretanja
 int skip = 20; // preskacemo prvih 20 zbog loseg ucitavanja zvuka
 bool startDots = true; // za ucitavanje kretanja
+bool isRecording = false;
 
 Player::Player(QGraphicsView *view, QGraphicsScene *scene = nullptr)
     : m_view(view), m_scene(scene)
@@ -65,23 +66,31 @@ void Player::keyPressEvent(QKeyEvent *event)
 
     else if(event->key() == Qt::Key_Space){
         qDebug() << "space";
-        recorder->startRecording(x(), y());
+        if (!isRecording){
+            recorder->startRecording(x(), y());
+            qDebug() << "recording started";
+            isRecording = true;
+        }
     }
 
     else if(event->key() == Qt::Key_S){
-        qDebug() << "stop";
-        if(startDots){
-            test = recorder->stopRecording();
-            sizeOfTest =  test.size();
-            startDots = false;
-        }
-        else{
-            testTmp = recorder->stopRecording();
-            currentPosition = test.size();
-            test.insert(test.end(),testTmp.begin(),testTmp.end());
-            sizeOfTest =  test.size();
-        }
+        if(isRecording){
+            qDebug() << "stop";
+            if(startDots){
+                test = recorder->stopRecording();
+                sizeOfTest =  test.size();
+                startDots = false;
+            }
+            else{
+                testTmp = recorder->stopRecording();
+                currentPosition = test.size();
+                test.insert(test.end(),testTmp.begin(),testTmp.end());
+                sizeOfTest =  test.size();
+            }
+            isRecording=false;
+            qDebug() << "recording finished";
 
+        }
     }
 
 }
