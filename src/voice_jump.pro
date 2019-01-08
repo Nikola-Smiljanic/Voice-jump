@@ -22,3 +22,8 @@ HEADERS += \
     obstacle.h
 
 FORMS +=
+
+DISTFILES +=
+
+RESOURCES += \
+    resources.qrc

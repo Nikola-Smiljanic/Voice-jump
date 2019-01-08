@@ -2,6 +2,11 @@
 #include <QApplication>
 #include <QGraphicsView>
 #include <QGraphicsScene>
+#include <QImage>
+#include <QBrush>
+#include <QTileRules>
+#include <QPixmap>
+#include <QGraphicsPixmapItem>
 
 #include "player.h"
 #include "recorder.h"
@@ -18,7 +23,14 @@ int main(int argc, char *argv[])
 
     //  inicijalizuje se scena
     QGraphicsScene scene;
-    scene.setSceneRect(-1600, -300, 4000, 800);
+    scene.setSceneRect(-2100, -180, 5000, 700);
+    //scene.setBackgroundBrush(QBrush(QImage(":/images/background.png").scaled(5000, 700).mirrored()));
+
+    QGraphicsPixmapItem *background0 = new QGraphicsPixmapItem(QPixmap(":/images/background.png"));
+    background0->setPos(0, 470);
+    background0->setScale(-1);
+    background0->setZValue(-1);
+    scene.addItem(background0);
 
     //  kreira se pogled za scenu
     QGraphicsView view(&scene);

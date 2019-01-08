@@ -35,8 +35,9 @@ void Player::keyPressEvent(QKeyEvent *event)
                 m_view->horizontalScrollBar()->setValue(m_view->horizontalScrollBar()->value() - 1);
             }
             else{
-                qDebug() << "ne moze vise levo";
-
+                qDebug() << "krece se u levo ravno";
+                setPos(x()-1, y());
+                m_view->horizontalScrollBar()->setValue(m_view->horizontalScrollBar()->value() - 1);
             }
         }
     }
@@ -50,7 +51,9 @@ void Player::keyPressEvent(QKeyEvent *event)
                 m_view->horizontalScrollBar()->setValue(m_view->horizontalScrollBar()->value() + 1);
             }
             else{
-                qDebug() << "ne moze vise desno";
+                qDebug() << "krece se u desno ravno";
+                setPos(x()+1, y());
+                m_view->horizontalScrollBar()->setValue(m_view->horizontalScrollBar()->value() + 1);
             }
         }
         if( ((int)x()) / VIEW_WIDTH ==  new_obsticales_group_count){
@@ -81,11 +84,15 @@ void Player::keyPressEvent(QKeyEvent *event)
 
     }
 
-    // popraviti da view prati igraca
-    //m_view->centerOn(this);
 }
 
 void Player::drawObsticles(int count){
+
+    QGraphicsPixmapItem *background = new QGraphicsPixmapItem(QPixmap(":/images/background.png"));
+    background->setPos((count+1)*1000, 470);
+    background->setScale(-1);
+    background->setZValue(-1);
+    m_scene->addItem(background);
 
     int num_of_obsticles = 3;
     for (int i=1; i<=num_of_obsticles; i++){
