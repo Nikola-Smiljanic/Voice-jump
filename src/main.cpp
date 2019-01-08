@@ -26,6 +26,8 @@ int main(int argc, char *argv[])
     scene.setSceneRect(-2100, -180, 5000, 700);
     //scene.setBackgroundBrush(QBrush(QImage(":/images/background.png").scaled(5000, 700).mirrored()));
 
+    // seed for random;
+    srand(time(NULL));
     QGraphicsPixmapItem *background0 = new QGraphicsPixmapItem(QPixmap(":/images/background.png"));
     background0->setPos(0, 470);
     background0->setScale(-1);
