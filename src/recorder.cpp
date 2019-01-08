@@ -37,19 +37,35 @@ std::vector<QPoint> Recorder::stopRecording()
     recent_magnitudes.resize(0);
     is_recording = false;
     start_magnitude = 0;
-    // buffer na pocetku unosa je los pa ga ignorisemo
-    int skip = 20;
-    int _ = 0;
-    for (QPoint point: line_dots){
-        if (_ < skip){
-        _++;
-        }
-        else{
-            m_scene->addLine(point.x(), point.y(), point.x(), point.y()+1, QPen(Qt::red, 3));
+
+    // brisu se sve linije sa scene
+    QList<QGraphicsItem *> all = m_scene->items();
+    for(QGraphicsItem *i : all){
+        if (i->type() == QGraphicsLineItem::Type){
+            m_scene->removeItem(i);
+            delete(i);
         }
     }
+    // vraca se linija za x osu
+    m_scene->addLine(0, 0, 5000, 0, QPen(Qt::black, 1));
+
+    // buffer na pocetku unosa je los pa ga ignorisemo
+//    int skip = 20;
+//    int _ = 0;
+//    for (QPoint point: line_dots){
+//        if (_ < skip){
+//        _++;
+//        }
+//        else{
+//            m_scene->addLine(point.x(), point.y(), point.x(), point.y()+1, QPen(Qt::red, 3));
+//        }
+//    }
     std::vector<QPoint> move_dots = line_dots;
     line_dots.resize(0);
+
+    for (auto it = move_dots.begin()+20; it+5 < move_dots.end(); it+=5)
+            m_scene->addLine((*it).x(), (*it).y(), (*(it+5)).x(), (*(it+5)).y(), QPen(Qt::red, 2, Qt::DotLine));
+
     return move_dots;
 }
 
@@ -150,10 +166,11 @@ void Recorder::processAudioBuffer(QAudioBuffer buffer)
     if (buffer_count == 20)
         start_magnitude = average_magn;
 
+    //  iscrtava se linija od prethodne tacke do ove
     if (buffer_count > 20)
-        m_scene->addLine(player_x + buffer_count, (average_magn-start_magnitude)*SCALING_MAG,
+        m_scene->addLine(line_dots.back().x(), line_dots.back().y(),
                          player_x + buffer_count, (average_magn-start_magnitude)*SCALING_MAG+1,
-                         QPen(Qt::darkBlue, 2));
+                         QPen(Qt::blue, 1));
 
     // dodaje se nova tacka za liniju kretanja
     line_dots.push_back(QPoint(player_x + buffer_count, (average_magn-start_magnitude)*SCALING_MAG));
