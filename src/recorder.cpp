@@ -49,33 +49,23 @@ std::vector<QPoint> Recorder::stopRecording()
     // vraca se linija za x osu
     m_scene->addLine(0, 0, 5000, 0, QPen(Qt::black, 1));
 
-    // buffer na pocetku unosa je los pa ga ignorisemo
-//    int skip = 20;
-//    int _ = 0;
-//    for (QPoint point: line_dots){
-//        if (_ < skip){
-//        _++;
-//        }
-//        else{
-//            m_scene->addLine(point.x(), point.y(), point.x(), point.y()+1, QPen(Qt::red, 3));
-//        }
-//    }
     std::vector<QPoint> move_dots = line_dots;
     line_dots.resize(0);
 
     std::vector<QPoint>::iterator it;
     for (it = move_dots.begin()+20; it+5 < move_dots.end(); it+=5)
         if ((*it).y()>=0){
-            m_scene->addLine((*it).x(), (*it).y(), (*(it+5)).x(), (*(it+5)).y(), QPen(Qt::red, 2, Qt::DotLine));
+            m_scene->addLine((*it).x(), (*it).y(), (*(it+5)).x(), (*(it+5)).y(), QPen(Qt::magenta, 2, Qt::DotLine));
         }
         else{
-            m_scene->addLine((*it).x(), 0, (*(it+5)).x(), 0, QPen(Qt::red, 2, Qt::DotLine));
+            // u slucaju da je frekv duboka crtaj ispod po x osi
+            m_scene->addLine((*it).x(), 0, (*(it+5)).x(), 0, QPen(Qt::magenta, 2, Qt::DotLine));
         }
 
     //  dodaje se tacka koja na kraju linije vraca igraca do x ose
     if(move_dots.back().y() != 0)
         move_dots.push_back(QPoint(move_dots.back().x(), 0));
-    m_scene->addLine(it->x(), it->y(), move_dots.rbegin()->x(), move_dots.rbegin()->y(), QPen(Qt::red, 2, Qt::DotLine));
+    m_scene->addLine(it->x(), it->y(), move_dots.rbegin()->x(), move_dots.rbegin()->y(), QPen(Qt::magenta, 2, Qt::DotLine));
 
     return move_dots;
 }
@@ -178,11 +168,20 @@ void Recorder::processAudioBuffer(QAudioBuffer buffer)
         start_magnitude = average_magn;
 
     //  iscrtava se linija od prethodne tacke do ove
-    if (buffer_count > 20)
-        m_scene->addLine(line_dots.back().x(), line_dots.back().y(),
-                         player_x + buffer_count, (average_magn-start_magnitude)*SCALING_MAG+1,
-                         QPen(Qt::blue, 1));
+    if (buffer_count > 20){
+        if(line_dots.back().y()>0){
+            m_scene->addLine(line_dots.back().x(), line_dots.back().y(),
+                             player_x + buffer_count, (average_magn-start_magnitude)*SCALING_MAG+1,
+                             QPen(Qt::blue, 1));
+        }
+        else{
+            // frek. ispod x ose boji crvenom bojom
+            m_scene->addLine(line_dots.back().x(), line_dots.back().y(),
+                             player_x + buffer_count, (average_magn-start_magnitude)*SCALING_MAG+1,
+                             QPen(Qt::red, 1));
 
+        }
+    }
     // dodaje se nova tacka za liniju kretanja
     line_dots.push_back(QPoint(player_x + buffer_count, (average_magn-start_magnitude)*SCALING_MAG));
 
