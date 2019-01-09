@@ -14,12 +14,14 @@ SOURCES += \
         main.cpp \
     player.cpp \
     recorder.cpp \
-    obstacle.cpp
+    obstacle.cpp \
+    score.cpp
 
 HEADERS += \
     player.h \
     recorder.h \
-    obstacle.h
+    obstacle.h \
+    score.h
 
 FORMS +=
 

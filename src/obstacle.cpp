@@ -16,13 +16,11 @@ Obstacle::Obstacle(int x, int y)
     qDebug() << "Sirina" << size_x;
     qDebug() << "Visina" << size_y;
     this->setRect(x, -y, size_x, size_y);
+
     QBrush q;
-//    q.setTextureImage(QImage(":/images/cactus.png"));
     QPixmap pixmapItem(":/images/cactus.png");
     QPixmap pixmapItems = pixmapItem.scaled(QSize(size_x,size_y),  Qt::KeepAspectRatio);
     q.setTexture(pixmapItems);
-
-
     this->setBrush(q);
 
 }

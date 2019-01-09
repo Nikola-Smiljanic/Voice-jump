@@ -10,6 +10,7 @@
 
 #include "player.h"
 #include "recorder.h"
+#include "score.h"
 
 #define VIEW_WIDTH 1000
 
@@ -36,11 +37,13 @@ int main(int argc, char *argv[])
 
     //  kreira se pogled za scenu
     QGraphicsView view(&scene);
-
     Player *player = new Player(&view, &scene);
+    QGraphicsItem *score = new Score();
     recorder = new Recorder(&scene, &scene);
 
+
     scene.addLine(0, 0, VIEW_WIDTH, 0, QPen(Qt::black, 1));
+    QGraphicsRotation rot;
 
     scene.addItem(player);
 
@@ -48,6 +51,8 @@ int main(int argc, char *argv[])
     view.setWindowTitle("voice jump");
 
     view.scale(1, -1);
+    score->setPos(-50,380);
+    scene.addItem(score);
     view.setHorizontalScrollBarPolicy ( Qt::ScrollBarAlwaysOff );
     view.setVerticalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
     view.show();

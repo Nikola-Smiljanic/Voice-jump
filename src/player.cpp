@@ -1,7 +1,6 @@
 #include "player.h"
-
 //variables
-std::vector<QPoint> test; // linija kretanja
+std::vector<QPoint> movementLine; // linija kretanja
 std::vector<QPoint> testTmp; // linija kretanja posle prve
 int sizeOfTest; //velicina kretanja
 int currentPosition = 0; //treutna pozicija kretanja
@@ -31,13 +30,13 @@ void Player::keyPressEvent(QKeyEvent *event)
     if(event->key() == Qt::Key_Left){
         if(!recorder->get_is_recording()){
             if (currentPosition>0){
-                if (test[currentPosition+skip].y()>0){
-                    setPos(test[currentPosition+skip].x()-20.5,test[currentPosition+skip].y()-15.5);
+                if (movementLine[currentPosition+skip].y()>0){
+                    setPos(movementLine[currentPosition+skip].x()-20.5,movementLine[currentPosition+skip].y()-15.5);
                     currentPosition--;
                     m_view->horizontalScrollBar()->setValue(m_view->horizontalScrollBar()->value() - 1);
                 }
                 else{
-                    setPos(test[currentPosition+skip].x()-20.5,-15.5);
+                    setPos(movementLine[currentPosition+skip].x()-20.5,-15.5);
                     currentPosition--;
                     m_view->horizontalScrollBar()->setValue(m_view->horizontalScrollBar()->value() - 1);
                 }
@@ -53,16 +52,15 @@ void Player::keyPressEvent(QKeyEvent *event)
     else if(event->key() == Qt::Key_Right){
         if(!recorder->get_is_recording()){
             if (currentPosition<sizeOfTest-skip){
-                if (test[currentPosition+skip].y()>0){
-                    setPos(test[currentPosition+skip].x()-20.5,test[currentPosition+skip].y()-15.5);
+                if (movementLine[currentPosition+skip].y()>0){
+                    setPos(movementLine[currentPosition+skip].x()-20.5,movementLine[currentPosition+skip].y()-15.5);
                     currentPosition++;
                     m_view->horizontalScrollBar()->setValue(m_view->horizontalScrollBar()->value() + 1);
                  }
                 else{
-                    setPos(test[currentPosition+skip].x()-20.5,-15.5);
+                    setPos(movementLine[currentPosition+skip].x()-20.5,-15.5);
                     currentPosition++;
                     m_view->horizontalScrollBar()->setValue(m_view->horizontalScrollBar()->value() + 1);
-
                 }
             }
             else{
@@ -91,15 +89,15 @@ void Player::keyPressEvent(QKeyEvent *event)
         if(isRecording){
             qDebug() << "stop";
             if(startDots){
-                test = recorder->stopRecording();
-                sizeOfTest =  test.size();
+                movementLine = recorder->stopRecording();
+                sizeOfTest =  movementLine.size();
                 startDots = false;
             }
             else{
                 testTmp = recorder->stopRecording();
-                currentPosition = test.size();
-                test.insert(test.end(),testTmp.begin(),testTmp.end());
-                sizeOfTest =  test.size();
+                currentPosition = movementLine.size();
+                movementLine.insert(movementLine.end(),testTmp.begin(),testTmp.end());
+                sizeOfTest =  movementLine.size();
             }
             isRecording=false;
             qDebug() << "recording finished";
