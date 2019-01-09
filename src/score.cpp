@@ -8,7 +8,7 @@ Score::Score(QGraphicsItem *parent): QGraphicsTextItem(parent){
     setPlainText(QString("Score: ") + QString::number(score));
     setFont(QFont("times",16));
     setDefaultTextColor(Qt::red);
-
+    setTransform(QTransform::fromScale(1, -1));
 }
 
 void Score::increaseScore(){
@@ -17,7 +17,7 @@ void Score::increaseScore(){
 }
 
 void Score::decreaseScore(){
-    score--;
+    score-= 200;
     if(score<0)
         score=0;
     setPlainText(QString("Score: ") + QString::number(score));

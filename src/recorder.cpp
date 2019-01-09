@@ -47,7 +47,7 @@ std::vector<QPoint> Recorder::stopRecording()
         }
     }
     // vraca se linija za x osu
-    m_scene->addLine(0, 0, 5000, 0, QPen(Qt::black, 1));
+    m_scene->addLine(-200, 0, 5000, 0, QPen(Qt::black, 1));
 
     std::vector<QPoint> move_dots = line_dots;
     line_dots.resize(0);

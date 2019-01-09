@@ -47,7 +47,7 @@ int main(int argc, char *argv[])
     view.setWindowTitle("voice jump");
 
     view.scale(1, -1);
-    score->setPos(-50,380);
+    score->setPos(-50,400);
     scene.addItem(score);
     view.setHorizontalScrollBarPolicy ( Qt::ScrollBarAlwaysOff );
     view.setVerticalScrollBarPolicy( Qt::ScrollBarAlwaysOff );

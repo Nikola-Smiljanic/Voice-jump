@@ -51,6 +51,7 @@ void Player::keyPressEvent(QKeyEvent *event)
                 score->decreaseScore();
                 m_view->horizontalScrollBar()->setValue(m_view->horizontalScrollBar()->value() - 1);
             }
+            score->setPos(-50 + x(), 380);
         }
     }
 
@@ -76,11 +77,58 @@ void Player::keyPressEvent(QKeyEvent *event)
                 score->increaseScore();
                 m_view->horizontalScrollBar()->setValue(m_view->horizontalScrollBar()->value() + 1);
             }
+
+            score->setPos(-50 + x(), 400);
         }
         if( ((int)x()) / VIEW_WIDTH ==  new_obsticales_group_count){
             drawObsticles(((int)x())/VIEW_WIDTH + 1);
             new_obsticales_group_count++;
         }
+
+        //  provera da li se igrac sudario s kaktusom
+        const auto collision_obsticales = scene()->items(QPolygonF({ mapToScene(0, 0),
+                                                                  mapToScene(50, 0),
+                                                                  mapToScene(50, 50)}
+                                                                ));
+
+        for (auto item: collision_obsticales) {
+            if (item == this)
+                continue;
+
+            else if (item->type() == Obstacle::Type){
+                qDebug() << "Kaktus!";
+                score->decreaseScore();
+                if(movementLine.size() != 0){
+                    //  vraca se na pocetak linije i brise se prikaz linije
+                    currentPosition = 0;
+                    double diff = x() - (movementLine[currentPosition+skip].x()-20.5);
+                    setPos(movementLine[currentPosition+skip].x()-20.5,movementLine[currentPosition+skip].y()-15.5);
+                    m_view->horizontalScrollBar()->setValue(m_view->horizontalScrollBar()->value() - diff);
+
+                    //  brise se linija za kretanje, TODO popraviti
+                    movementLine.resize(0);
+                    testTmp.resize(0);
+
+                    // brisu se sve linije sa scene
+                    QList<QGraphicsItem *> all = m_scene->items();
+                    for(QGraphicsItem *i : all){
+                        if (i->type() == QGraphicsLineItem::Type){
+                            m_scene->removeItem(i);
+                            delete(i);
+                        }
+                    }
+                    //  vraca se linija za x osu
+                    m_scene->addLine(-200, 0, 5000, 0, QPen(Qt::black, 1));
+
+                }
+                else{
+                    setPos(x()-100, 0);
+                    m_view->horizontalScrollBar()->setValue(m_view->horizontalScrollBar()->value() - 100);
+                }
+
+            }
+        }
+
 
     }
 
