@@ -15,7 +15,7 @@
 #define VIEW_WIDTH 1000
 
 Recorder *recorder;
-
+Score *score;
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
@@ -38,13 +38,9 @@ int main(int argc, char *argv[])
     //  kreira se pogled za scenu
     QGraphicsView view(&scene);
     Player *player = new Player(&view, &scene);
-    QGraphicsItem *score = new Score();
+    score = new Score();
     recorder = new Recorder(&scene, &scene);
-
-
     scene.addLine(0, 0, VIEW_WIDTH, 0, QPen(Qt::black, 1));
-    QGraphicsRotation rot;
-
     scene.addItem(player);
 
     player->drawObsticles(0);
