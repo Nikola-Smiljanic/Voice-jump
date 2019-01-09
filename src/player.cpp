@@ -1,4 +1,5 @@
 #include "player.h"
+#include "score.h"
 //variables
 std::vector<QPoint> movementLine; // linija kretanja
 std::vector<QPoint> testTmp; // linija kretanja posle prve
@@ -7,6 +8,7 @@ int currentPosition = 0; //treutna pozicija kretanja
 int skip = 20; // preskacemo prvih 20 zbog loseg ucitavanja zvuka
 bool startDots = true; // za ucitavanje kretanja
 bool isRecording = false;
+extern Score* score;
 
 Player::Player(QGraphicsView *view, QGraphicsScene *scene = nullptr)
     : m_view(view), m_scene(scene)
@@ -33,17 +35,20 @@ void Player::keyPressEvent(QKeyEvent *event)
                 if (movementLine[currentPosition+skip].y()>0){
                     setPos(movementLine[currentPosition+skip].x()-20.5,movementLine[currentPosition+skip].y()-15.5);
                     currentPosition--;
+                    score->decreaseScore();
                     m_view->horizontalScrollBar()->setValue(m_view->horizontalScrollBar()->value() - 1);
                 }
                 else{
                     setPos(movementLine[currentPosition+skip].x()-20.5,-15.5);
                     currentPosition--;
+                    score->decreaseScore();
                     m_view->horizontalScrollBar()->setValue(m_view->horizontalScrollBar()->value() - 1);
                 }
             }
             else{
                 qDebug() << "krece se u levo ravno";
                 setPos(x()-1, y());
+                score->decreaseScore();
                 m_view->horizontalScrollBar()->setValue(m_view->horizontalScrollBar()->value() - 1);
             }
         }
@@ -56,16 +61,19 @@ void Player::keyPressEvent(QKeyEvent *event)
                     setPos(movementLine[currentPosition+skip].x()-20.5,movementLine[currentPosition+skip].y()-15.5);
                     currentPosition++;
                     m_view->horizontalScrollBar()->setValue(m_view->horizontalScrollBar()->value() + 1);
+                    score->increaseScore();
                  }
                 else{
                     setPos(movementLine[currentPosition+skip].x()-20.5,-15.5);
                     currentPosition++;
                     m_view->horizontalScrollBar()->setValue(m_view->horizontalScrollBar()->value() + 1);
+                    score->increaseScore();
                 }
             }
             else{
                 qDebug() << "krece se u desno ravno";
                 setPos(x()+1, y());
+                score->increaseScore();
                 m_view->horizontalScrollBar()->setValue(m_view->horizontalScrollBar()->value() + 1);
             }
         }
