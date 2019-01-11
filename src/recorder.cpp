@@ -52,20 +52,33 @@ std::vector<QPoint> Recorder::stopRecording()
     std::vector<QPoint> move_dots = line_dots;
     line_dots.resize(0);
 
+    //  crta se linija kretanja
     std::vector<QPoint>::iterator it;
-    for (it = move_dots.begin()+20; it+5 < move_dots.end(); it+=5)
-        if ((*it).y()>=0){
+    for (it = move_dots.begin()+20; it+5 < move_dots.end(); it+=5){
+
+        if ((*it).y() >= 0  &&  (*(it+5)).y() >= 0)
+            //  u slucaju da su obe tacke iznad x ose crta se normalno
             m_scene->addLine((*it).x(), (*it).y(), (*(it+5)).x(), (*(it+5)).y(), QPen(Qt::magenta, 2, Qt::DotLine));
-        }
-        else{
+
+        else if ((*it).y()>=0 && (*(it+5)).y() < 0)
+            //  u slucaju da je samo desna tacka ispod x ose
+            m_scene->addLine((*it).x(), (*it).y(), (*(it+5)).x(), 0, QPen(Qt::magenta, 2, Qt::DotLine));
+
+        else if ((*it).y()<0 && (*(it+5)).y() >= 0)
+            //  u slucaju da je samo leva tacka ispod x ose
+            m_scene->addLine((*it).x(), 0, (*(it+5)).x(), (*(it+5)).y(), QPen(Qt::magenta, 2, Qt::DotLine));
+
+        else
             // u slucaju da je frekv duboka crtaj ispod po x osi
             m_scene->addLine((*it).x(), 0, (*(it+5)).x(), 0, QPen(Qt::magenta, 2, Qt::DotLine));
-        }
 
-    //  dodaje se tacka koja na kraju linije vraca igraca do x ose
-    if(move_dots.back().y() != 0)
-        move_dots.push_back(QPoint(move_dots.back().x(), 0));
-    m_scene->addLine(it->x(), it->y(), move_dots.rbegin()->x(), move_dots.rbegin()->y(), QPen(Qt::magenta, 2, Qt::DotLine));
+    }
+
+    //  dodaje se tacka koja na kraju linije vraca igraca do x ose, ako je bio iznad nje
+    if(move_dots.back().y() > 0)
+        move_dots.push_back(QPoint(move_dots.back().x()+1, 0));
+    if (it->y() >= 0)
+        m_scene->addLine(it->x(), it->y(), move_dots.rbegin()->x()+1, 0, QPen(Qt::magenta, 2, Qt::DotLine));
 
     return move_dots;
 }
@@ -179,7 +192,6 @@ void Recorder::processAudioBuffer(QAudioBuffer buffer)
             m_scene->addLine(line_dots.back().x(), line_dots.back().y(),
                              player_x + buffer_count, (average_magn-start_magnitude)*SCALING_MAG+1,
                              QPen(Qt::red, 1));
-
         }
     }
     // dodaje se nova tacka za liniju kretanja
