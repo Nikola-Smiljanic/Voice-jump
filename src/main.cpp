@@ -7,6 +7,7 @@
 #include <QTileRules>
 #include <QPixmap>
 #include <QGraphicsPixmapItem>
+#include <QColor>
 
 #include "player.h"
 #include "recorder.h"
@@ -16,6 +17,7 @@
 
 Recorder *recorder;
 Score *score;
+
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
@@ -25,30 +27,34 @@ int main(int argc, char *argv[])
     //  inicijalizuje se scena
     QGraphicsScene scene;
     scene.setSceneRect(-2100, -180, 5000, 700);
-    //scene.setBackgroundBrush(QBrush(QImage(":/images/background.png").scaled(5000, 700).mirrored()));
 
     // seed for random;
     srand(time(NULL));
-    QGraphicsPixmapItem *background0 = new QGraphicsPixmapItem(QPixmap(":/images/background.png"));
-    background0->setPos(0, 470);
-    background0->setScale(-1);
-    background0->setZValue(-1);
-    scene.addItem(background0);
 
     //  kreira se pogled za scenu
     QGraphicsView view(&scene);
+    view.scale(1, -1);
+
     Player *player = new Player(&view, &scene);
-    score = new Score();
+
     recorder = new Recorder(&scene, &scene);
     scene.addLine(0, 0, VIEW_WIDTH, 0, QPen(Qt::black, 1));
     scene.addItem(player);
 
+    player->drawBackground(-1);
+
+    player->drawBackground(0);
     player->drawObsticles(0);
+
+    player->drawBackground(1);
+    player->drawObsticles(1);
+
     view.setWindowTitle("voice jump");
 
-    view.scale(1, -1);
-    score->setPos(-50,400);
+    score = new Score();
+    score->setPos(-50, 400);
     scene.addItem(score);
+
     view.setHorizontalScrollBarPolicy ( Qt::ScrollBarAlwaysOff );
     view.setVerticalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
     view.show();

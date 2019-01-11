@@ -1,7 +1,7 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
-#include <QGraphicsEllipseItem>
+#include <QGraphicsRectItem>
 #include <QGraphicsView>
 #include <QGraphicsScene>
 #include <QDebug>
@@ -16,12 +16,13 @@
 extern Recorder *recorder;
 //extern QGraphicsScene scene;
 
-class Player : public QGraphicsEllipseItem
+class Player : public QGraphicsRectItem
 {
 public:
     Player(QGraphicsView *view, QGraphicsScene *scene);
     void keyPressEvent(QKeyEvent *event);
     void drawObsticles(int count);
+    void drawBackground(int count);
     //void keyReleaseEvent(QKeyEvent *event);
 
 private:

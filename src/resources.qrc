@@ -2,5 +2,6 @@
     <qresource prefix="/images">
         <file>background.png</file>
         <file>cactus.png</file>
+        <file>balloon.png</file>
     </qresource>
 </RCC>
