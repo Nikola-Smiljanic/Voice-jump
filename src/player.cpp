@@ -7,6 +7,7 @@ int sizeOfTest; //velicina kretanja
 int currentPosition = 0; //treutna pozicija kretanja
 int skip = 20; // preskacemo prvih 20 zbog loseg ucitavanja zvuka
 bool startDots = true; // za ucitavanje kretanja
+int moveRScore = 0;
 bool isRecording = false;
 extern Score* score;
 
@@ -40,7 +41,9 @@ void Player::keyPressEvent(QKeyEvent *event)
                 if (movementLine[currentPosition+skip].y()>0){
                     setPos(movementLine[currentPosition+skip].x()-20.5,movementLine[currentPosition+skip].y()-15.5);
                     currentPosition--;
-                    score->decreaseScore();
+                    if(currentPosition%300 ==0){
+                        score->decreaseScore();
+                    }
                     m_view->horizontalScrollBar()->setValue(m_view->horizontalScrollBar()->value() - 1);
                 }
                 else{
@@ -52,8 +55,7 @@ void Player::keyPressEvent(QKeyEvent *event)
             }
             else{
                 qDebug() << "krece se u levo ravno";
-                setPos(x()-1, y());
-                score->decreaseScore();
+                setPos(x()-1, y());              
                 m_view->horizontalScrollBar()->setValue(m_view->horizontalScrollBar()->value() - 1);
             }
             score->setPos(-50 + x(), 380);
@@ -67,13 +69,14 @@ void Player::keyPressEvent(QKeyEvent *event)
                     setPos(movementLine[currentPosition+skip].x()-20.5,movementLine[currentPosition+skip].y()-15.5);
                     currentPosition++;
                     m_view->horizontalScrollBar()->setValue(m_view->horizontalScrollBar()->value() + 1);
-                    score->increaseScore();
+                    if(currentPosition%300 ==0){
+                        score->increaseScore();
+                    }
                  }
                 else{
                     setPos(movementLine[currentPosition+skip].x()-20.5,-15.5);
                     currentPosition++;
                     m_view->horizontalScrollBar()->setValue(m_view->horizontalScrollBar()->value() + 1);
-                    score->increaseScore();
                 }
             }
             else{
@@ -175,6 +178,7 @@ void Player::drawObsticles(int count){
     int num_of_obsticles = 3;
     for (int i=1; i<=num_of_obsticles; i++){
         Obstacle *o = new Obstacle(count*VIEW_WIDTH + i*100 + i*400/(num_of_obsticles-1), 0);
+        qDebug() <<" POZ:" << count*VIEW_WIDTH + i*100 + i*400/(num_of_obsticles-1);
         m_scene->addItem(o);
     }
 
