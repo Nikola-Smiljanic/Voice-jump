@@ -19,8 +19,8 @@ void Score::increaseScore(){
 }
 
 void Score::decreaseScore(){
-    score-= 100*scoreMult;
     scoreMult--;
+    score-= 100*scoreMult;
     if(score<0)
         score=0;
     setPlainText(QString("Score: ") + QString::number(score));
