@@ -26,6 +26,12 @@ void Score::decreaseScore(){
     setPlainText(QString("Score: ") + QString::number(score));
 }
 
+void Score::gameOverScore(){
+    score= 0;
+    scoreMult= 1;
+    setPlainText(QString("Score: ") + QString::number(score));
+}
+
 
 int Score::getScore(){
     return score;

@@ -8,6 +8,7 @@ public:
     Score(QGraphicsItem * parent=0);
     void increaseScore();
     void decreaseScore();
+    void gameOverScore();
     int getScore();
 private:
     int score;

@@ -113,11 +113,12 @@ void Player::keyPressEvent(QKeyEvent *event)
 
             else if (item->type() == Obstacle::Type){
                 qDebug() << "Kaktus!";
-                score->decreaseScore();
+                score->gameOverScore();
 
                 if(movementLine.size() != 0){
                     //  vraca se na pocetak linije i brise se prikaz linije
                     currentPosition = 0;
+                    startDots = true;
                     double diff = x() - (movementLine[currentPosition+skip].x()-20.5);
                     setPos(movementLine[currentPosition+skip].x()-20.5,movementLine[currentPosition+skip].y()-15.5);
                     m_view->horizontalScrollBar()->setValue(m_view->horizontalScrollBar()->value() - diff);
