@@ -4,6 +4,7 @@
 Score::Score(QGraphicsItem *parent): QGraphicsTextItem(parent){
     // pocetna score vrednost
     score = 0;
+    scoreMult = 1;
     // ispis score-a
     setPlainText(QString("Score: ") + QString::number(score));
     setFont(QFont("times",16));
@@ -12,12 +13,14 @@ Score::Score(QGraphicsItem *parent): QGraphicsTextItem(parent){
 }
 
 void Score::increaseScore(){
-    score+= 200;
+    score+= 100*scoreMult;
+    scoreMult++;
     setPlainText(QString("Score: ") + QString::number(score));
 }
 
 void Score::decreaseScore(){
-    score-= 200;
+    score-= 100*scoreMult;
+    scoreMult--;
     if(score<0)
         score=0;
     setPlainText(QString("Score: ") + QString::number(score));

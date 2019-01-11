@@ -11,6 +11,7 @@ public:
     int getScore();
 private:
     int score;
+    int scoreMult;
 };
 
 #endif // SCORE_H

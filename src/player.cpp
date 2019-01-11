@@ -7,7 +7,7 @@ int sizeOfTest; //velicina kretanja
 int currentPosition = 0; //treutna pozicija kretanja
 int skip = 20; // preskacemo prvih 20 zbog loseg ucitavanja zvuka
 bool startDots = true; // za ucitavanje kretanja
-int moveRScore = 0;
+int postion = 0;
 bool isRecording = false;
 extern Score* score;
 
@@ -40,22 +40,24 @@ void Player::keyPressEvent(QKeyEvent *event)
             if (currentPosition>0){
                 if (movementLine[currentPosition+skip].y()>0){
                     setPos(movementLine[currentPosition+skip].x()-20.5,movementLine[currentPosition+skip].y()-15.5);
+                    postion--;
                     currentPosition--;
-                    if(currentPosition%300 ==0){
+                    if(postion%300 ==0){
                         score->decreaseScore();
                     }
                     m_view->horizontalScrollBar()->setValue(m_view->horizontalScrollBar()->value() - 1);
                 }
                 else{
                     setPos(movementLine[currentPosition+skip].x()-20.5,-15.5);
+                    postion--;
                     currentPosition--;
-                    score->decreaseScore();
                     m_view->horizontalScrollBar()->setValue(m_view->horizontalScrollBar()->value() - 1);
                 }
             }
             else{
-                qDebug() << "krece se u levo ravno";
-                setPos(x()-1, y());              
+                postion--;
+                qDebug() << "krece se u levo ravno" << postion;
+                setPos(x()-1, y());
                 m_view->horizontalScrollBar()->setValue(m_view->horizontalScrollBar()->value() - 1);
             }
             score->setPos(-50 + x(), 380);
@@ -68,21 +70,26 @@ void Player::keyPressEvent(QKeyEvent *event)
                 if (movementLine[currentPosition+skip].y()>0){
                     setPos(movementLine[currentPosition+skip].x()-20.5,movementLine[currentPosition+skip].y()-15.5);
                     currentPosition++;
+                    postion++;
                     m_view->horizontalScrollBar()->setValue(m_view->horizontalScrollBar()->value() + 1);
-                    if(currentPosition%300 ==0){
+                    if(postion%300 ==0){
                         score->increaseScore();
                     }
                  }
                 else{
                     setPos(movementLine[currentPosition+skip].x()-20.5,-15.5);
                     currentPosition++;
+                    postion++;
+                    if(postion%300 ==0){
+                        score->increaseScore();
+                    }
                     m_view->horizontalScrollBar()->setValue(m_view->horizontalScrollBar()->value() + 1);
                 }
             }
             else{
-                qDebug() << "krece se u desno ravno";
+                qDebug() << "krece se u desno ravno" << postion;
                 setPos(x()+1, y());
-                score->increaseScore();
+                postion++;
                 m_view->horizontalScrollBar()->setValue(m_view->horizontalScrollBar()->value() + 1);
             }
 
