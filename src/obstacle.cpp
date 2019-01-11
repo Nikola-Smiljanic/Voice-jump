@@ -15,12 +15,32 @@ Obstacle::Obstacle(int x, int y)
     qDebug() << "prepreka";
     qDebug() << "Sirina" << size_x;
     qDebug() << "Visina" << size_y;
-    this->setRect(x, -y, size_x, size_y);
+
+    this->setRect(0, 0, size_x, size_y);
 
     QBrush q;
-    QPixmap pixmapItem(":/images/cactus.png");
-    QPixmap pixmapItems = pixmapItem.scaled(QSize(size_x,size_y),  Qt::KeepAspectRatio);
-    q.setTexture(pixmapItems);
+
+    //  mali kaktus
+    if (size_y + size_x < 150)
+        q.setTextureImage(QImage(":/images/cactus5.png").scaled(size_x, size_y, Qt::IgnoreAspectRatio).mirrored());
+    //  visoki kaktus
+    else if (size_y < 80 &&  size_y >100)
+        q.setTextureImage(QImage(":/images/cactus2.png").scaled(size_x, size_y, Qt::IgnoreAspectRatio).mirrored());
+    //  siroki mali kaktus
+    else if (size_x + size_y < 170 && size_x > 80)
+        q.setTextureImage(QImage(":/images/cactus3.png").scaled(size_x, size_y, Qt::IgnoreAspectRatio).mirrored());
+    //  siroki veliki kaktus
+    else if (size_x/size_y > 1.4 && size_x > 100)
+        q.setTextureImage(QImage(":/images/cactus4.png").scaled(size_x, size_y, Qt::IgnoreAspectRatio).mirrored());
+    //  ostali slucajevi
+    else
+        q.setTextureImage(QImage(":/images/cactus1.png").scaled(size_x, size_y, Qt::IgnoreAspectRatio).mirrored());
+
+
     this->setBrush(q);
+
+    this->setPen(QPen(Qt::transparent));
+
+    this->setPos(x, y);
 
 }
