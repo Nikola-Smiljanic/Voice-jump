@@ -112,8 +112,8 @@ void Player::keyPressEvent(QKeyEvent *event)
                         recorder->delete_lines();
                     }
                     //  igrac se vraca unazad
-                    setPos(x()-200, 0);
-                    m_view->horizontalScrollBar()->setValue(m_view->horizontalScrollBar()->value() - 200);
+                    setPos(x()-100, 0);
+                    m_view->horizontalScrollBar()->setValue(m_view->horizontalScrollBar()->value() - 100);
                 }
             }
 
