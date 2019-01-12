@@ -38,41 +38,16 @@ std::vector<QPoint> Recorder::stopRecording()
     is_recording = false;
     start_magnitude = 0;
 
-    // brisu se sve linije sa scene
-    QList<QGraphicsItem *> all = m_scene->items();
-    for(QGraphicsItem *i : all){
-        if (i->type() == QGraphicsLineItem::Type){
-            m_scene->removeItem(i);
-            delete(i);
-        }
-    }
-    // vraca se linija za x osu
-    m_scene->addLine(-200, 0, 5000, 0, QPen(Qt::black, 1));
+    delete_lines();
 
     std::vector<QPoint> move_dots = line_dots;
     line_dots.resize(0);
 
     //  crta se linija kretanja
     std::vector<QPoint>::iterator it;
-    for (it = move_dots.begin()+20; it+5 < move_dots.end(); it+=5){
+    for (it = move_dots.begin()+20; it+5 < move_dots.end(); it+=5)
+        m_scene->addLine((*it).x(), (*it).y(), (*(it+5)).x(), (*(it+5)).y(), QPen(Qt::magenta, 2, Qt::DotLine));
 
-        if ((*it).y() >= 0  &&  (*(it+5)).y() >= 0)
-            //  u slucaju da su obe tacke iznad x ose crta se normalno
-            m_scene->addLine((*it).x(), (*it).y(), (*(it+5)).x(), (*(it+5)).y(), QPen(Qt::magenta, 2, Qt::DotLine));
-
-        else if ((*it).y()>=0 && (*(it+5)).y() < 0)
-            //  u slucaju da je samo desna tacka ispod x ose
-            m_scene->addLine((*it).x(), (*it).y(), (*(it+5)).x(), 0, QPen(Qt::magenta, 2, Qt::DotLine));
-
-        else if ((*it).y()<0 && (*(it+5)).y() >= 0)
-            //  u slucaju da je samo leva tacka ispod x ose
-            m_scene->addLine((*it).x(), 0, (*(it+5)).x(), (*(it+5)).y(), QPen(Qt::magenta, 2, Qt::DotLine));
-
-        else
-            // u slucaju da je frekv duboka crtaj ispod po x osi
-            m_scene->addLine((*it).x(), 0, (*(it+5)).x(), 0, QPen(Qt::magenta, 2, Qt::DotLine));
-
-    }
 
     //  dodaje se tacka koja na kraju linije vraca igraca do x ose, ako je bio iznad nje
     if(move_dots.back().y() > 0)
@@ -93,6 +68,20 @@ void Recorder::set_is_recording(bool b)
     is_recording = b;
 }
 
+void Recorder::delete_lines()
+{
+    // brisu se sve linije sa scene
+    QList<QGraphicsItem *> all = m_scene->items();
+    for(QGraphicsItem *i : all){
+        if (i->type() == QGraphicsLineItem::Type){
+            m_scene->removeItem(i);
+            delete(i);
+        }
+    }
+    // vraca se linija za x osu
+    m_scene->addLine(-200, 0, 5000, 0, QPen(Qt::black, 1));
+}
+
 
 //  brza furijeova transformacija (FFT):
 double Recorder::fft_calculation(double input[], int n){
@@ -104,24 +93,18 @@ double Recorder::fft_calculation(double input[], int n){
     fftw_execute(myPlan);
 
     double current_magnitude;
-
     double part_mag_max = 0;
-    double part_mag_min = 2000;
 
-    //  obrada izlaza iz fft
-    for(int i=2; i<n/2; i++)    // u prvom je posebna vrednost (DC)
+    //  obrada izlaza iz fft, posmatra se samo mali deo oko sredine, sto je visi ton vece su vrednosti
+    for(int i=n*2/16; i<n*3/16; i++)
     {
-        // posmatra se samo mali deo oko sredine, sto je visi ton vece su razlike
-        if(i > n*2/16 && i < n*3/16){
+        //Formula:  magnitude = sqrt(re*re+im*im)
+        current_magnitude = sqrt(output[i][REAL]*output[i][REAL] + output[i][IMAG]*output[i][IMAG]);
 
-            //Formula:  magnitude = sqrt(re*re+im*im)
-            current_magnitude = sqrt(output[i][REAL]*output[i][REAL] + output[i][IMAG]*output[i][IMAG]);
-
-            part_mag_max = (current_magnitude > part_mag_max) ? current_magnitude : part_mag_max;
-            part_mag_min = (current_magnitude < part_mag_min) ? current_magnitude : part_mag_min;
-        }
+        part_mag_max = (current_magnitude > part_mag_max) ? current_magnitude : part_mag_max;
 
     }
+
 
     fftw_destroy_plan(myPlan);
 
@@ -183,19 +166,24 @@ void Recorder::processAudioBuffer(QAudioBuffer buffer)
     //  iscrtava se linija od prethodne tacke do ove
     if (buffer_count > 20){
         if(line_dots.back().y()>0){
-            m_scene->addLine(line_dots.back().x(), line_dots.back().y(),
+            m_scene->addLine(line_dots.back().x(), line_previous_y,
                              player_x + buffer_count, (average_magn-start_magnitude)*SCALING_MAG+1,
                              QPen(Qt::blue, 1));
         }
         else{
             // frek. ispod x ose boji crvenom bojom
-            m_scene->addLine(line_dots.back().x(), line_dots.back().y(),
+            m_scene->addLine(line_dots.back().x(), line_previous_y,
                              player_x + buffer_count, (average_magn-start_magnitude)*SCALING_MAG+1,
                              QPen(Qt::red, 1));
         }
     }
-    // dodaje se nova tacka za liniju kretanja
-    line_dots.push_back(QPoint(player_x + buffer_count, (average_magn-start_magnitude)*SCALING_MAG));
+
+    // dodaje se nova tacka za liniju kretanja, ako je ispod linije stavlja se na liniju
+    if( (average_magn-start_magnitude)*SCALING_MAG > 0)
+        line_dots.push_back(QPoint(player_x + buffer_count, (average_magn-start_magnitude)*SCALING_MAG));
+    else
+        line_dots.push_back(QPoint(player_x + buffer_count, 0));
+    line_previous_y = (average_magn-start_magnitude)*SCALING_MAG;
 
     qDebug() << "Maksimum na manjem delu: \t" << magnitudes_max;
     qDebug() << "sample rate   \t"   << buffer.format().sampleRate();

@@ -1,14 +1,6 @@
 #include "player.h"
 #include "score.h"
-//variables
-std::vector<QPoint> movementLine; // linija kretanja
-std::vector<QPoint> testTmp; // linija kretanja posle prve
-int sizeOfTest; //velicina kretanja
-int currentPosition = 0; //treutna pozicija kretanja
-int skip = 20; // preskacemo prvih 20 zbog loseg ucitavanja zvuka
-bool startDots = true; // za ucitavanje kretanja
-int postion = 0;
-bool isRecording = false;
+
 extern Score* score;
 
 Player::Player(QGraphicsView *view, QGraphicsScene *scene = nullptr)
@@ -30,71 +22,57 @@ Player::Player(QGraphicsView *view, QGraphicsScene *scene = nullptr)
     this->setFlag(QGraphicsItem::ItemIsFocusable);
     this->setFocus();
 
-
 }
 
 void Player::keyPressEvent(QKeyEvent *event)
 {
     if(event->key() == Qt::Key_Left){
-        if(!recorder->get_is_recording()){
-            if (currentPosition>0){
-                if (movementLine[currentPosition+skip].y()>0){
-                    setPos(movementLine[currentPosition+skip].x()-20.5,movementLine[currentPosition+skip].y()-15.5);
-                    postion--;
-                    currentPosition--;
-                    if(postion%300 ==0){
-                        score->decreaseScore();
-                    }
-                    m_view->horizontalScrollBar()->setValue(m_view->horizontalScrollBar()->value() - 1);
-                }
-                else{
-                    setPos(movementLine[currentPosition+skip].x()-20.5,-15.5);
-                    postion--;
-                    currentPosition--;
-                    m_view->horizontalScrollBar()->setValue(m_view->horizontalScrollBar()->value() - 1);
+
+        if(!recorder->get_is_recording() && x() > 0){
+
+            if (currentPosition>0 && (position - recordingStartPosition+skip) < (int)movementLine.size()){
+
+                currentPosition--;
+                setPos(movementLine[currentPosition+skip].x()-20.5,movementLine[currentPosition+skip].y()-15.5);
+
+                if(position%300 ==0){
+                    score->decreaseScore();
                 }
             }
             else{
-                postion--;
-                qDebug() << "krece se u levo ravno" << postion;
+
+                qDebug() << "krece se u levo ravno" << position;
                 setPos(x()-1, y());
-                m_view->horizontalScrollBar()->setValue(m_view->horizontalScrollBar()->value() - 1);
             }
-            score->setPos(-50 + x(), 380);
+            position--;
+            m_view->horizontalScrollBar()->setValue(m_view->horizontalScrollBar()->value() - 1);
+            score->setPos(-50 + x(), 400);
         }
     }
 
     else if(event->key() == Qt::Key_Right){
+
         if(!recorder->get_is_recording()){
-            if (currentPosition<sizeOfTest-skip){
-                if (movementLine[currentPosition+skip].y()>0){
-                    setPos(movementLine[currentPosition+skip].x()-20.5,movementLine[currentPosition+skip].y()-15.5);
-                    currentPosition++;
-                    postion++;
-                    m_view->horizontalScrollBar()->setValue(m_view->horizontalScrollBar()->value() + 1);
-                    if(postion%300 ==0){
-                        score->increaseScore();
-                    }
-                 }
-                else{
-                    setPos(movementLine[currentPosition+skip].x()-20.5,-15.5);
-                    currentPosition++;
-                    postion++;
-                    if(postion%300 ==0){
-                        score->increaseScore();
-                    }
-                    m_view->horizontalScrollBar()->setValue(m_view->horizontalScrollBar()->value() + 1);
+            if (currentPosition<sizeOfTest-skip && position >= recordingStartPosition){
+
+                setPos(movementLine[currentPosition+skip].x()-20.5,movementLine[currentPosition+skip].y()-15.5);
+                currentPosition++;
+
+                if(position%300 ==0){
+                    score->increaseScore();
                 }
+
             }
             else{
-                qDebug() << "krece se u desno ravno" << postion;
+                qDebug() << "krece se u desno ravno" << position;
                 setPos(x()+1, y());
-                postion++;
-                m_view->horizontalScrollBar()->setValue(m_view->horizontalScrollBar()->value() + 1);
             }
 
+            position++;
+            m_view->horizontalScrollBar()->setValue(m_view->horizontalScrollBar()->value() + 1);
             score->setPos(-50 + x(), 400);
         }
+
         if( ((int)x()) / VIEW_WIDTH ==  new_obsticales_group_count){
             drawBackground(((int)x())/VIEW_WIDTH + 2);
             drawObsticles(((int)x())/VIEW_WIDTH + 2);
@@ -115,35 +93,18 @@ void Player::keyPressEvent(QKeyEvent *event)
                 qDebug() << "Kaktus!";
                 score->gameOverScore();
 
+                //  ako je balon bio na liniji zvuka kad je naisao na kaktus
                 if(movementLine.size() > 0){
-                    //  vraca se na pocetak linije i brise se prikaz linije
+                    //  brise se prikaz linije
                     currentPosition = 0;
-                    startDots = true;
-
-                    setPos(x()-200, 0);
-                    m_view->horizontalScrollBar()->setValue(m_view->horizontalScrollBar()->value() - 200);
-
-                    //  brise se linija za kretanje
                     movementLine.clear();
                     sizeOfTest = 0;
 
-                    // brisu se sve linije sa scene
-                    QList<QGraphicsItem *> all = m_scene->items();
-                    for(QGraphicsItem *i : all){
-                        if (i->type() == QGraphicsLineItem::Type){
-                            m_scene->removeItem(i);
-                            delete(i);
-                        }
-                    }
-                    //  vraca se linija za x osu
-                    m_scene->addLine(-200, 0, 5000, 0, QPen(Qt::black, 1));
-
+                    recorder->delete_lines();
                 }
-                else{
-                    setPos(x()-100, 0);
-                    m_view->horizontalScrollBar()->setValue(m_view->horizontalScrollBar()->value() - 100);
-                }
-
+                //  igrac se vraca unazad
+                setPos(x()-200, 0);
+                m_view->horizontalScrollBar()->setValue(m_view->horizontalScrollBar()->value() - 200);
             }
         }
 
@@ -153,6 +114,11 @@ void Player::keyPressEvent(QKeyEvent *event)
     else if(event->key() == Qt::Key_Space){
         qDebug() << "space";
         if (!recorder->get_is_recording()){
+
+            recorder->delete_lines();
+            recordingStartPosition = position;
+            currentPosition = 0;
+
             recorder->startRecording(x(), y());
             qDebug() << "recording started";
         }
@@ -161,18 +127,20 @@ void Player::keyPressEvent(QKeyEvent *event)
     else if(event->key() == Qt::Key_S){
         if(recorder->get_is_recording()){
             qDebug() << "stop";
-            if(startDots){
-                movementLine = recorder->stopRecording();
-                sizeOfTest =  movementLine.size();
-                startDots = false;
-            }
-            else{
-                testTmp = recorder->stopRecording();
-                currentPosition = movementLine.size();
-                movementLine.insert(movementLine.end(),testTmp.begin(),testTmp.end());
-                sizeOfTest =  movementLine.size();
-            }
-            qDebug() << "recording finished";
+//            if(startDots){
+
+            movementLine = recorder->stopRecording();
+            sizeOfTest =  movementLine.size();
+
+//                startDots = false;
+//            }
+//            else{
+//                testTmp = recorder->stopRecording();
+//                currentPosition = movementLine.size();
+//                movementLine.insert(movementLine.end(),testTmp.begin(),testTmp.end());
+//                sizeOfTest =  movementLine.size();
+//            }
+//            qDebug() << "recording finished";
 
         }
     }

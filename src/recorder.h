@@ -23,7 +23,6 @@
 #define REAL 0
 #define IMAG 1
 #define SCALING_MAG 20
-#define LINE_EPOCH 31
 
 class Recorder : public QObject
 {
@@ -34,17 +33,22 @@ public:
     std::vector<QPoint> stopRecording();
     bool get_is_recording();
     void set_is_recording(bool b);
+    void delete_lines();
 public slots:
     void processAudioBuffer(QAudioBuffer buffer);
 private:
     QAudioRecorder *recorder;
     bool is_recording = false;
+
     //  brojac poziva funkcije processAudioBuffer
     unsigned int buffer_count = 0;
+
     std::vector<double> recent_magnitudes;
     std::vector<QPoint> line_dots;
+
     QGraphicsScene *m_scene;
     double start_magnitude;
+    double line_previous_y = 0;
 
     double fft_calculation(double input[], int n);
 

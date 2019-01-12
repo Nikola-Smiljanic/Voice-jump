@@ -2,12 +2,6 @@
 #include <QApplication>
 #include <QGraphicsView>
 #include <QGraphicsScene>
-#include <QImage>
-#include <QBrush>
-#include <QTileRules>
-#include <QPixmap>
-#include <QGraphicsPixmapItem>
-#include <QColor>
 
 #include "player.h"
 #include "recorder.h"
