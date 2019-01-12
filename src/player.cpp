@@ -30,6 +30,7 @@ void Player::keyPressEvent(QKeyEvent *event)
 
         if(!recorder->get_is_recording() && x() > 0){
 
+            //  ako se igrac (balon) nalazi na liniji krece se po njoj
             if (currentPosition>0 && (position - recordingStartPosition+skip) < (int)movementLine.size()){
 
                 currentPosition--;
@@ -39,10 +40,11 @@ void Player::keyPressEvent(QKeyEvent *event)
                     score->decreaseScore();
                 }
             }
+            //  ako se igrac (balon) nalazi van linije krece se ravno po podu
             else{
 
                 qDebug() << "krece se u levo ravno" << position;
-                setPos(x()-1, y());
+                setPos(x()-1, 0);
             }
             position--;
             m_view->horizontalScrollBar()->setValue(m_view->horizontalScrollBar()->value() - 1);
@@ -53,7 +55,9 @@ void Player::keyPressEvent(QKeyEvent *event)
     else if(event->key() == Qt::Key_Right){
 
         if(!recorder->get_is_recording()){
-            if (currentPosition<sizeOfTest-skip && position >= recordingStartPosition){
+
+            //  ako se igrac (balon) nalazi na liniji krece se po njoj
+            if (movementLine.size() > 0 && currentPosition<sizeOfTest-skip && position >= recordingStartPosition){
 
                 setPos(movementLine[currentPosition+skip].x()-20.5,movementLine[currentPosition+skip].y()-15.5);
                 currentPosition++;
@@ -63,9 +67,10 @@ void Player::keyPressEvent(QKeyEvent *event)
                 }
 
             }
+            //  ako se igrac (balon) nalazi van linije krece se ravno po podu
             else{
                 qDebug() << "krece se u desno ravno" << position;
-                setPos(x()+1, y());
+                setPos(x()+1, 0);
             }
 
             position++;
@@ -114,7 +119,8 @@ void Player::keyPressEvent(QKeyEvent *event)
     else if(event->key() == Qt::Key_Space){
         qDebug() << "space";
         if (!recorder->get_is_recording()){
-
+            //  igrac (balon) se spusta na pod ako je bio iznad
+            setPos(x(), 0);
             recorder->delete_lines();
             recordingStartPosition = position;
             currentPosition = 0;
@@ -126,22 +132,11 @@ void Player::keyPressEvent(QKeyEvent *event)
 
     else if(event->key() == Qt::Key_S){
         if(recorder->get_is_recording()){
-            qDebug() << "stop";
-//            if(startDots){
 
             movementLine = recorder->stopRecording();
             sizeOfTest =  movementLine.size();
 
-//                startDots = false;
-//            }
-//            else{
-//                testTmp = recorder->stopRecording();
-//                currentPosition = movementLine.size();
-//                movementLine.insert(movementLine.end(),testTmp.begin(),testTmp.end());
-//                sizeOfTest =  movementLine.size();
-//            }
-//            qDebug() << "recording finished";
-
+            qDebug() << "recording stopped";
         }
     }
 
@@ -156,7 +151,7 @@ void Player::drawObsticles(int count){
         m_scene->addItem(o);
     }
 
-    m_scene->addLine(count*VIEW_WIDTH-100, 0, (count+1)*VIEW_WIDTH, 0, QPen(Qt::black, 1));
+    m_scene->addLine(count*VIEW_WIDTH-100, 0, (count+1)*VIEW_WIDTH, 0, QPen(Qt::green, 1));
 
 }
 

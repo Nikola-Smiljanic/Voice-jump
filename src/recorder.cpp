@@ -14,8 +14,6 @@ Recorder::Recorder(QObject *parent = nullptr, QGraphicsScene *scene = nullptr)
     recorder->setContainerFormat("mp3");
     recorder->setEncodingSettings(audioSettings);
 
-    //recorder->setOutputLocation(QUrl::fromLocalFile("proba_qt_snimak.mp3"));
-
     //  funkcija processBuffer se poziva kad recorder ima nove podatke
     probe->setSource(recorder);
     QObject::connect(probe, SIGNAL(audioBufferProbed(QAudioBuffer)), this, SLOT(processAudioBuffer(QAudioBuffer)));
@@ -45,15 +43,15 @@ std::vector<QPoint> Recorder::stopRecording()
 
     //  crta se linija kretanja
     std::vector<QPoint>::iterator it;
+
     for (it = move_dots.begin()+20; it+5 < move_dots.end(); it+=5)
         m_scene->addLine((*it).x(), (*it).y(), (*(it+5)).x(), (*(it+5)).y(), QPen(Qt::magenta, 2, Qt::DotLine));
 
-
     //  dodaje se tacka koja na kraju linije vraca igraca do x ose, ako je bio iznad nje
-    if(move_dots.back().y() > 0)
-        move_dots.push_back(QPoint(move_dots.back().x()+1, 0));
-    if (it->y() >= 0)
-        m_scene->addLine(it->x(), it->y(), it->x()+1, 0, QPen(Qt::magenta, 2, Qt::DotLine));
+    if(move_dots.back().y() > 15)
+        move_dots.push_back(QPoint(move_dots.back().x()+1, 15));
+    if (it->y() >= 15)
+        m_scene->addLine(it->x(), it->y(), it->x()+1, 15, QPen(Qt::magenta, 2, Qt::DotLine));
 
     return move_dots;
 }
@@ -79,7 +77,7 @@ void Recorder::delete_lines()
         }
     }
     // vraca se linija za x osu
-    m_scene->addLine(-200, 0, 5000, 0, QPen(Qt::black, 1));
+    m_scene->addLine(-200, 0, 5000, 0, QPen(Qt::green, 1));
 }
 
 
@@ -165,7 +163,7 @@ void Recorder::processAudioBuffer(QAudioBuffer buffer)
 
     //  iscrtava se linija od prethodne tacke do ove
     if (buffer_count > 20){
-        if(line_dots.back().y()>0){
+        if(line_dots.back().y()>15){
             m_scene->addLine(line_dots.back().x(), line_previous_y,
                              player_x + buffer_count, (average_magn-start_magnitude)*SCALING_MAG+1,
                              QPen(Qt::blue, 1));
@@ -179,17 +177,14 @@ void Recorder::processAudioBuffer(QAudioBuffer buffer)
     }
 
     // dodaje se nova tacka za liniju kretanja, ako je ispod linije stavlja se na liniju
-    if( (average_magn-start_magnitude)*SCALING_MAG > 0)
+    if( (average_magn-start_magnitude)*SCALING_MAG > 15)
         line_dots.push_back(QPoint(player_x + buffer_count, (average_magn-start_magnitude)*SCALING_MAG));
     else
-        line_dots.push_back(QPoint(player_x + buffer_count, 0));
+        line_dots.push_back(QPoint(player_x + buffer_count, 15));
     line_previous_y = (average_magn-start_magnitude)*SCALING_MAG;
 
     qDebug() << "Maksimum na manjem delu: \t" << magnitudes_max;
     qDebug() << "sample rate   \t"   << buffer.format().sampleRate();
-    qDebug() << "chanel count  \t"   << buffer.format().channelCount();
-    qDebug() << "duration      \t" << buffer.duration();
-    qDebug() << "frame count   \t" << buffer.frameCount();
 
     buffer_count++;
 

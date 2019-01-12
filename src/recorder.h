@@ -48,7 +48,7 @@ private:
 
     QGraphicsScene *m_scene;
     double start_magnitude;
-    double line_previous_y = 0;
+    double line_previous_y = 15;
 
     double fft_calculation(double input[], int n);
 
