@@ -91,11 +91,16 @@ void Player::keyPressEvent(QKeyEvent *event)
 
                 else if (item->type() == Obstacle::Type){
                     qDebug() << "Kaktus!";
-                    score->gameOverScore();
-                    Game_over *a= new Game_over(score->getScore(),position);
-                    a->setPos(360, 300);
-                    m_scene->addItem(a);
-                    gameOverBool = false;
+
+                    score->decreaseCactusScore();
+
+                    if(score->getLives() < 0){
+                        Game_over *a= new Game_over(score->getScore(),position);
+                        a->setPos(360, 300);
+                        m_scene->addItem(a);
+                        gameOverBool = false;
+                    }
+
                     //  ako je balon bio na liniji zvuka kad je naisao na kaktus
                     if(movementLine.size() > 0){
                         //  brise se prikaz linije
@@ -106,7 +111,7 @@ void Player::keyPressEvent(QKeyEvent *event)
                         recorder->delete_lines();
                     }
                     //  igrac se vraca unazad
-                    setPos(x()-position, 0);
+                    setPos(x()-200, 0);
                     m_view->horizontalScrollBar()->setValue(m_view->horizontalScrollBar()->value() - 200);
                 }
             }

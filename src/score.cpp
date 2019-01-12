@@ -6,7 +6,7 @@ Score::Score(QGraphicsItem *parent): QGraphicsTextItem(parent){
     score = 0;
     scoreMult = 1;
     // ispis score-a
-    setPlainText(QString("Score: ") + QString::number(score));
+    setPlainText(QString("Score: ") + QString::number(score) + QString("\nLives: ") + QString::number(lives));
     setFont(QFont("times",16));
     setDefaultTextColor(Qt::red);
     setTransform(QTransform::fromScale(1, -1));
@@ -15,7 +15,7 @@ Score::Score(QGraphicsItem *parent): QGraphicsTextItem(parent){
 void Score::increaseScore(){
     score+= 100*scoreMult;
     scoreMult++;
-    setPlainText(QString("Score: ") + QString::number(score));
+    setPlainText(QString("Score: ") + QString::number(score) + QString("\nLives: ") + QString::number(lives));
 }
 
 void Score::decreaseScore(){
@@ -23,7 +23,12 @@ void Score::decreaseScore(){
     score-= 100*scoreMult;
     if(score<0)
         score=0;
-    setPlainText(QString("Score: ") + QString::number(score));
+    setPlainText(QString("Score: ") + QString::number(score) + QString("\nLives: ") + QString::number(lives));
+}
+
+void Score::decreaseCactusScore(){
+    lives --;
+    setPlainText(QString("Score: ") + QString::number(score) + QString("\nLives: ") + QString::number(lives));
 }
 
 void Score::gameOverScore(){
@@ -38,8 +43,12 @@ int Score::getScore(){
     return score;
 }
 
+int Score::getLives(){
+    return lives;
+}
+
 void Score::resetScore(){
     score= 0;
     scoreMult= 1;
-    setPlainText(QString("Score: ") + QString::number(score));
+    setPlainText(QString("Score: ") + QString::number(score) + QString("\nLives: ") + QString::number(lives));
 }
