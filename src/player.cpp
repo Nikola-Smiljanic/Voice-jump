@@ -27,15 +27,12 @@ Player::Player(QGraphicsView *view, QGraphicsScene *scene = nullptr)
 void Player::keyPressEvent(QKeyEvent *event)
 {
     if(event->key() == Qt::Key_Left){
-
         if(!recorder->get_is_recording() && x() > 0){
-
+            position--;
             //  ako se igrac (balon) nalazi na liniji krece se po njoj
             if (currentPosition>0 && (position - recordingStartPosition+skip) < (int)movementLine.size()){
-
                 currentPosition--;
                 setPos(movementLine[currentPosition+skip].x()-20.5,movementLine[currentPosition+skip].y()-15.5);
-                position--;
                 if(position%300 ==0){
                     score->decreaseScore();
                 }
@@ -43,26 +40,22 @@ void Player::keyPressEvent(QKeyEvent *event)
             }
             //  ako se igrac (balon) nalazi van linije krece se ravno po podu
             else{
-
                 qDebug() << "krece se u levo ravno" << position;
                 setPos(x()-1, 0);
             }
-            position--;
+
             m_view->horizontalScrollBar()->setValue(m_view->horizontalScrollBar()->value() - 1);
             score->setPos(-50 + x(), 400);
         }
     }
 
     else if(event->key() == Qt::Key_Right){
-
         if(!recorder->get_is_recording()){
-
+            position++;
             //  ako se igrac (balon) nalazi na liniji krece se po njoj
             if (movementLine.size() > 0 && currentPosition<sizeOfTest-skip && position >= recordingStartPosition){
-
                 setPos(movementLine[currentPosition+skip].x()-20.5,movementLine[currentPosition+skip].y()-15.5);
                 currentPosition++;
-                position++;
                 if(position%300 ==0){
                     score->increaseScore();
                 }
@@ -74,7 +67,6 @@ void Player::keyPressEvent(QKeyEvent *event)
                 setPos(x()+1, 0);
             }
 
-            position++;
             m_view->horizontalScrollBar()->setValue(m_view->horizontalScrollBar()->value() + 1);
             score->setPos(-50 + x(), 400);
         }
