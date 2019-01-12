@@ -34,7 +34,7 @@ int main(int argc, char *argv[])
     Player *player = new Player(&view, &scene);
 
     recorder = new Recorder(&scene, &scene);
-    scene.addLine(0, 0, VIEW_WIDTH, 0, QPen(Qt::black, 1));
+
     scene.addItem(player);
 
     player->drawBackground(-1);

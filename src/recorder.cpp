@@ -8,10 +8,10 @@ Recorder::Recorder(QObject *parent = nullptr, QGraphicsScene *scene = nullptr)
 
     QAudioEncoderSettings audioSettings;
 //    u slucaju da mikrofon ne prepoznaje zakomentarisati liniju ispod
-    audioSettings.setCodec("audio/PCM");
+   // audioSettings.setCodec("audio/PCM");
     audioSettings.setQuality(QMultimedia::HighQuality);
 //    u slucaju da mikrofon ne prepoznaje zakomentarisati liniju ispod
-    recorder->setContainerFormat("mp3");
+  //  recorder->setContainerFormat("mp3");
     recorder->setEncodingSettings(audioSettings);
 
     //  funkcija processBuffer se poziva kad recorder ima nove podatke
@@ -186,6 +186,14 @@ void Recorder::processAudioBuffer(QAudioBuffer buffer)
     qDebug() << "Maksimum na manjem delu: \t" << magnitudes_max;
     qDebug() << "sample rate   \t"   << buffer.format().sampleRate();
 
+    if(buffer_count % 60 == 0 && buffer_count != 0) {
+        QGraphicsPixmapItem *nota = new QGraphicsPixmapItem(QPixmap(":/images/nota.png"));
+        nota->setPos(line_dots.back().x(), 300);
+        //nota->setRotation(-180);
+
+        nota->setScale(-0.1);
+        m_scene->addItem(nota);
+    }
     buffer_count++;
 
 }
