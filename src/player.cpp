@@ -35,10 +35,11 @@ void Player::keyPressEvent(QKeyEvent *event)
 
                 currentPosition--;
                 setPos(movementLine[currentPosition+skip].x()-20.5,movementLine[currentPosition+skip].y()-15.5);
-
+                position--;
                 if(position%300 ==0){
                     score->decreaseScore();
                 }
+
             }
             //  ako se igrac (balon) nalazi van linije krece se ravno po podu
             else{
@@ -61,7 +62,7 @@ void Player::keyPressEvent(QKeyEvent *event)
 
                 setPos(movementLine[currentPosition+skip].x()-20.5,movementLine[currentPosition+skip].y()-15.5);
                 currentPosition++;
-
+                position++;
                 if(position%300 ==0){
                     score->increaseScore();
                 }
