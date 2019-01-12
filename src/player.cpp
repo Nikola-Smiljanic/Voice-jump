@@ -30,13 +30,14 @@ void Player::keyPressEvent(QKeyEvent *event)
             if(gameOverBool){
                 if(!recorder->get_is_recording() && x() > 0){
                     position--;
+                    if(position%300 ==0){
+                        score->decreaseScore();
+                    }
                     //  ako se igrac (balon) nalazi na liniji krece se po njoj
                     if (currentPosition>0 && (position - recordingStartPosition+skip) < (int)movementLine.size()){
                         currentPosition--;
                         setPos(movementLine[currentPosition+skip].x()-20.5,movementLine[currentPosition+skip].y()-15.5);
-                        if(position%300 ==0){
-                            score->decreaseScore();
-                        }
+
 
                     }
                     //  ako se igrac (balon) nalazi van linije krece se ravno po podu
@@ -55,13 +56,13 @@ void Player::keyPressEvent(QKeyEvent *event)
             if(gameOverBool){
                 if(!recorder->get_is_recording()){
                     position++;
+                    if(position%300 ==0){
+                        score->increaseScore();
+                    }
                     //  ako se igrac (balon) nalazi na liniji krece se po njoj
                     if (movementLine.size() > 0 && currentPosition<sizeOfTest-skip && position >= recordingStartPosition){
                         setPos(movementLine[currentPosition+skip].x()-20.5,movementLine[currentPosition+skip].y()-15.5);
                         currentPosition++;
-                        if(position%300 ==0){
-                            score->increaseScore();
-                        }
 
                     }
                     //  ako se igrac (balon) nalazi van linije krece se ravno po podu
@@ -94,7 +95,7 @@ void Player::keyPressEvent(QKeyEvent *event)
 
                     score->decreaseCactusScore();
 
-                    if(score->getLives() < 0){
+                    if(score->getLives() == 0){
                         Game_over *a= new Game_over(score->getScore(),position);
                         a->setPos(360, 300);
                         m_scene->addItem(a);
