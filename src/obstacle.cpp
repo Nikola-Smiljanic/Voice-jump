@@ -24,7 +24,7 @@ Obstacle::Obstacle(int x, int y)
     if (size_y + size_x < 150)
         q.setTextureImage(QImage(":/images/cactus5.png").scaled(size_x, size_y, Qt::IgnoreAspectRatio).mirrored());
     //  visoki kaktus
-    else if (size_y < 80 &&  size_y >100)
+    else if (size_x < 80 &&  size_y >100)
         q.setTextureImage(QImage(":/images/cactus2.png").scaled(size_x, size_y, Qt::IgnoreAspectRatio).mirrored());
     //  siroki mali kaktus
     else if (size_x + size_y < 170 && size_x > 80)

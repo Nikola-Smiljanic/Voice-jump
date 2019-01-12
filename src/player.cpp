@@ -18,7 +18,7 @@ Player::Player(QGraphicsView *view, QGraphicsScene *scene = nullptr)
 
     this->setRect(0, 0, 50, 50);
     QBrush q;
-    q.setTextureImage(QImage(":/images/balloon.png").scaled(50, 50).mirrored());
+    q.setTextureImage(QImage(":/images/balloon1.png").scaled(50, 50).mirrored());
     this->setBrush(q);
 
     this->setPen(QPen(Qt::transparent));
@@ -115,17 +115,17 @@ void Player::keyPressEvent(QKeyEvent *event)
                 qDebug() << "Kaktus!";
                 score->gameOverScore();
 
-                if(movementLine.size() != 0){
+                if(movementLine.size() > 0){
                     //  vraca se na pocetak linije i brise se prikaz linije
                     currentPosition = 0;
                     startDots = true;
-                    double diff = x() - (movementLine[currentPosition+skip].x()-20.5);
-                    setPos(movementLine[currentPosition+skip].x()-20.5,movementLine[currentPosition+skip].y()-15.5);
-                    m_view->horizontalScrollBar()->setValue(m_view->horizontalScrollBar()->value() - diff);
 
-                    //  brise se linija za kretanje, TODO popraviti
-                    movementLine.resize(0);
-                    testTmp.resize(0);
+                    setPos(x()-200, 0);
+                    m_view->horizontalScrollBar()->setValue(m_view->horizontalScrollBar()->value() - 200);
+
+                    //  brise se linija za kretanje
+                    movementLine.clear();
+                    sizeOfTest = 0;
 
                     // brisu se sve linije sa scene
                     QList<QGraphicsItem *> all = m_scene->items();
@@ -152,15 +152,14 @@ void Player::keyPressEvent(QKeyEvent *event)
 
     else if(event->key() == Qt::Key_Space){
         qDebug() << "space";
-        if (!isRecording){
+        if (!recorder->get_is_recording()){
             recorder->startRecording(x(), y());
             qDebug() << "recording started";
-            isRecording = true;
         }
     }
 
     else if(event->key() == Qt::Key_S){
-        if(isRecording){
+        if(recorder->get_is_recording()){
             qDebug() << "stop";
             if(startDots){
                 movementLine = recorder->stopRecording();
@@ -173,7 +172,6 @@ void Player::keyPressEvent(QKeyEvent *event)
                 movementLine.insert(movementLine.end(),testTmp.begin(),testTmp.end());
                 sizeOfTest =  movementLine.size();
             }
-            isRecording=false;
             qDebug() << "recording finished";
 
         }
@@ -207,7 +205,3 @@ void Player::drawBackground(int count){
     background->setZValue(-1);
     m_scene->addItem(background);
 }
-
-
-
-

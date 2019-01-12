@@ -78,7 +78,7 @@ std::vector<QPoint> Recorder::stopRecording()
     if(move_dots.back().y() > 0)
         move_dots.push_back(QPoint(move_dots.back().x()+1, 0));
     if (it->y() >= 0)
-        m_scene->addLine(it->x(), it->y(), move_dots.rbegin()->x()+1, 0, QPen(Qt::magenta, 2, Qt::DotLine));
+        m_scene->addLine(it->x(), it->y(), it->x()+1, 0, QPen(Qt::magenta, 2, Qt::DotLine));
 
     return move_dots;
 }
