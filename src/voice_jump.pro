@@ -15,13 +15,15 @@ SOURCES += \
     player.cpp \
     recorder.cpp \
     obstacle.cpp \
-    score.cpp
+    score.cpp \
+    game_over.cpp
 
 HEADERS += \
     player.h \
     recorder.h \
     obstacle.h \
-    score.h
+    score.h \
+    game_over.h
 
 FORMS +=
 
