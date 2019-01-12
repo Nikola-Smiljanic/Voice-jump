@@ -8,6 +8,7 @@
 #include <QKeyEvent>
 #include "recorder.h"
 #include "obstacle.h"
+#include "game_over.h"
 
 #define VIEW_WIDTH 1000
 
@@ -37,7 +38,7 @@ private:
     int skip = 20; // preskacemo prvih 20 zbog loseg ucitavanja zvuka
     //bool startDots = true; // za ucitavanje kretanja
     int position = 0;
-
+    bool gameOverBool = true;
 };
 
 #endif // PLAYER_H

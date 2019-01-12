@@ -9,6 +9,7 @@ public:
     void increaseScore();
     void decreaseScore();
     void gameOverScore();
+    void resetScore();
     int getScore();
 private:
     int score;

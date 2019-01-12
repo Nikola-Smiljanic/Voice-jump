@@ -29,10 +29,17 @@ void Score::decreaseScore(){
 void Score::gameOverScore(){
     score= 0;
     scoreMult= 1;
-    setPlainText(QString("Score: ") + QString::number(score));
+    setPlainText(QString(""));
+
 }
 
 
 int Score::getScore(){
     return score;
+}
+
+void Score::resetScore(){
+    score= 0;
+    scoreMult= 1;
+    setPlainText(QString("Score: ") + QString::number(score));
 }

@@ -26,112 +26,118 @@ Player::Player(QGraphicsView *view, QGraphicsScene *scene = nullptr)
 
 void Player::keyPressEvent(QKeyEvent *event)
 {
-    if(event->key() == Qt::Key_Left){
-        if(!recorder->get_is_recording() && x() > 0){
-            position--;
-            //  ako se igrac (balon) nalazi na liniji krece se po njoj
-            if (currentPosition>0 && (position - recordingStartPosition+skip) < (int)movementLine.size()){
-                currentPosition--;
-                setPos(movementLine[currentPosition+skip].x()-20.5,movementLine[currentPosition+skip].y()-15.5);
-                if(position%300 ==0){
-                    score->decreaseScore();
+        if(event->key() == Qt::Key_Left){
+            if(gameOverBool){
+                if(!recorder->get_is_recording() && x() > 0){
+                    position--;
+                    //  ako se igrac (balon) nalazi na liniji krece se po njoj
+                    if (currentPosition>0 && (position - recordingStartPosition+skip) < (int)movementLine.size()){
+                        currentPosition--;
+                        setPos(movementLine[currentPosition+skip].x()-20.5,movementLine[currentPosition+skip].y()-15.5);
+                        if(position%300 ==0){
+                            score->decreaseScore();
+                        }
+
+                    }
+                    //  ako se igrac (balon) nalazi van linije krece se ravno po podu
+                    else{
+                        qDebug() << "krece se u levo ravno" << position;
+                        setPos(x()-1, 0);
+                    }
+
+                    m_view->horizontalScrollBar()->setValue(m_view->horizontalScrollBar()->value() - 1);
+                    score->setPos(-50 + x(), 400);
                 }
-
             }
-            //  ako se igrac (balon) nalazi van linije krece se ravno po podu
-            else{
-                qDebug() << "krece se u levo ravno" << position;
-                setPos(x()-1, 0);
-            }
-
-            m_view->horizontalScrollBar()->setValue(m_view->horizontalScrollBar()->value() - 1);
-            score->setPos(-50 + x(), 400);
         }
-    }
 
-    else if(event->key() == Qt::Key_Right){
-        if(!recorder->get_is_recording()){
-            position++;
-            //  ako se igrac (balon) nalazi na liniji krece se po njoj
-            if (movementLine.size() > 0 && currentPosition<sizeOfTest-skip && position >= recordingStartPosition){
-                setPos(movementLine[currentPosition+skip].x()-20.5,movementLine[currentPosition+skip].y()-15.5);
-                currentPosition++;
-                if(position%300 ==0){
-                    score->increaseScore();
+        else if(event->key() == Qt::Key_Right){
+            if(gameOverBool){
+                if(!recorder->get_is_recording()){
+                    position++;
+                    //  ako se igrac (balon) nalazi na liniji krece se po njoj
+                    if (movementLine.size() > 0 && currentPosition<sizeOfTest-skip && position >= recordingStartPosition){
+                        setPos(movementLine[currentPosition+skip].x()-20.5,movementLine[currentPosition+skip].y()-15.5);
+                        currentPosition++;
+                        if(position%300 ==0){
+                            score->increaseScore();
+                        }
+
+                    }
+                    //  ako se igrac (balon) nalazi van linije krece se ravno po podu
+                    else{
+                        qDebug() << "krece se u desno ravno" << position;
+                        setPos(x()+1, 0);
+                    }
+
+                    m_view->horizontalScrollBar()->setValue(m_view->horizontalScrollBar()->value() + 1);
+                    score->setPos(-50 + x(), 400);
                 }
-
             }
-            //  ako se igrac (balon) nalazi van linije krece se ravno po podu
-            else{
-                qDebug() << "krece se u desno ravno" << position;
-                setPos(x()+1, 0);
+            if( ((int)x()) / VIEW_WIDTH ==  new_obsticales_group_count){
+                drawBackground(((int)x())/VIEW_WIDTH + 2);
+                drawObsticles(((int)x())/VIEW_WIDTH + 2);
+                new_obsticales_group_count++;
             }
 
-            m_view->horizontalScrollBar()->setValue(m_view->horizontalScrollBar()->value() + 1);
-            score->setPos(-50 + x(), 400);
+            //  provera da li se igrac sudario s kaktusom
+            const auto collision_obsticales = scene()->items(QPolygonF({ mapToScene(0, 0),
+                                                                         mapToScene(50, 0),
+                                                                         mapToScene(50, 50)
+                                                                        }));
+            for (auto item: collision_obsticales) {
+                if (item == this)
+                    continue;
+
+                else if (item->type() == Obstacle::Type){
+                    qDebug() << "Kaktus!";
+                    score->gameOverScore();
+                    Game_over *a= new Game_over(score->getScore(),position);
+                    a->setPos(360, 300);
+                    m_scene->addItem(a);
+                    gameOverBool = false;
+                    //  ako je balon bio na liniji zvuka kad je naisao na kaktus
+                    if(movementLine.size() > 0){
+                        //  brise se prikaz linije
+                        currentPosition = 0;
+                        movementLine.clear();
+                        sizeOfTest = 0;
+
+                        recorder->delete_lines();
+                    }
+                    //  igrac se vraca unazad
+                    setPos(x()-position, 0);
+                    m_view->horizontalScrollBar()->setValue(m_view->horizontalScrollBar()->value() - 200);
+                }
+            }
+
+
         }
 
-        if( ((int)x()) / VIEW_WIDTH ==  new_obsticales_group_count){
-            drawBackground(((int)x())/VIEW_WIDTH + 2);
-            drawObsticles(((int)x())/VIEW_WIDTH + 2);
-            new_obsticales_group_count++;
-        }
-
-        //  provera da li se igrac sudario s kaktusom
-        const auto collision_obsticales = scene()->items(QPolygonF({ mapToScene(0, 0),
-                                                                     mapToScene(50, 0),
-                                                                     mapToScene(50, 50)
-                                                                    }));
-
-        for (auto item: collision_obsticales) {
-            if (item == this)
-                continue;
-
-            else if (item->type() == Obstacle::Type){
-                qDebug() << "Kaktus!";
-                score->gameOverScore();
-
-                //  ako je balon bio na liniji zvuka kad je naisao na kaktus
-                if(movementLine.size() > 0){
-                    //  brise se prikaz linije
-                    currentPosition = 0;
-                    movementLine.clear();
-                    sizeOfTest = 0;
-
+        else if(event->key() == Qt::Key_Space){
+            if(gameOverBool){
+                qDebug() << "space";
+                if (!recorder->get_is_recording()){
+                    //  igrac (balon) se spusta na pod ako je bio iznad
+                    setPos(x(), 0);
                     recorder->delete_lines();
+                    recordingStartPosition = position;
+                    currentPosition = 0;
+                    recorder->startRecording(x(), y());
+                    qDebug() << "recording started";
                 }
-                //  igrac se vraca unazad
-                setPos(x()-200, 0);
-                m_view->horizontalScrollBar()->setValue(m_view->horizontalScrollBar()->value() - 200);
             }
         }
 
-
-    }
-
-    else if(event->key() == Qt::Key_Space){
-        qDebug() << "space";
-        if (!recorder->get_is_recording()){
-            //  igrac (balon) se spusta na pod ako je bio iznad
-            setPos(x(), 0);
-            recorder->delete_lines();
-            recordingStartPosition = position;
-            currentPosition = 0;
-
-            recorder->startRecording(x(), y());
-            qDebug() << "recording started";
+        else if(event->key() == Qt::Key_S){
+            if(gameOverBool){
+                if(recorder->get_is_recording()){
+                    movementLine = recorder->stopRecording();
+                    sizeOfTest =  movementLine.size();
+                    qDebug() << "recording stopped";
+                }
+            }
         }
-    }
-
-    else if(event->key() == Qt::Key_S){
-        if(recorder->get_is_recording()){
-
-            movementLine = recorder->stopRecording();
-            sizeOfTest =  movementLine.size();
-
-            qDebug() << "recording stopped";
-        }
-    }
 
 }
 
