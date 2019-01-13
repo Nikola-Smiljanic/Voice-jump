@@ -34,16 +34,18 @@ int main(int argc, char *argv[])
     Player *player = new Player(&view, &scene);
 
     recorder = new Recorder(&scene, &scene);
-    scene.addLine(0, 0, VIEW_WIDTH, 0, QPen(Qt::black, 1));
+
     scene.addItem(player);
 
     player->drawBackground(-1);
 
     player->drawBackground(0);
     player->drawObsticles(0);
+    player->drawFlowers(0);
 
     player->drawBackground(1);
     player->drawObsticles(1);
+    player->drawFlowers(1);
 
     view.setWindowTitle("voice jump");
 

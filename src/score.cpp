@@ -18,6 +18,11 @@ void Score::increaseScore(){
     setPlainText(QString("Score: ") + QString::number(score) + QString("\nLives: ") + QString::number(lives));
 }
 
+void Score::increaseScoreFlowers(){
+    score+=10*scoreMult;
+    setPlainText(QString("Score: ") + QString::number(score) + QString("\nLives: ") + QString::number(lives));
+}
+
 void Score::decreaseScore(){
     scoreMult--;
     score-= 100*scoreMult;
