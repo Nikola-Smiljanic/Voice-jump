@@ -10,5 +10,6 @@
         <file>balloon.png</file>
         <file>balloon1.png</file>
         <file>nota.png</file>
+        <file>flower.png</file>
     </qresource>
 </RCC>

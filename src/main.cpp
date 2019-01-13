@@ -41,9 +41,11 @@ int main(int argc, char *argv[])
 
     player->drawBackground(0);
     player->drawObsticles(0);
+    player->drawFlowers(0);
 
     player->drawBackground(1);
     player->drawObsticles(1);
+    player->drawFlowers(1);
 
     view.setWindowTitle("voice jump");
 

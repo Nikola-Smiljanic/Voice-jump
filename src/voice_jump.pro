@@ -16,14 +16,16 @@ SOURCES += \
     recorder.cpp \
     obstacle.cpp \
     score.cpp \
-    game_over.cpp
+    game_over.cpp \
+    flower.cpp
 
 HEADERS += \
     player.h \
     recorder.h \
     obstacle.h \
     score.h \
-    game_over.h
+    game_over.h \
+    flower.h
 
 FORMS +=
 

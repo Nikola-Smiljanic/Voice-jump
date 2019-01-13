@@ -8,6 +8,7 @@
 #include <QKeyEvent>
 #include "recorder.h"
 #include "obstacle.h"
+#include "flower.h"
 #include "game_over.h"
 
 #define VIEW_WIDTH 1000
@@ -21,6 +22,7 @@ public:
     Player(QGraphicsView *view, QGraphicsScene *scene);
     void keyPressEvent(QKeyEvent *event);
     void drawObsticles(int count);
+    void drawFlowers(int count);
     void drawBackground(int count);
     //void keyReleaseEvent(QKeyEvent *event);
 

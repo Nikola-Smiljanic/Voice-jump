@@ -81,7 +81,7 @@ void Player::keyPressEvent(QKeyEvent *event)
                 new_obsticales_group_count++;
             }
 
-            //  provera da li se igrac sudario s kaktusom
+            //  provera da li se igrac sudario s kaktusom ili sa cvetom
             const auto collision_obsticales = scene()->items(QPolygonF({ mapToScene(0, 0),
                                                                          mapToScene(50, 0),
                                                                          mapToScene(50, 50)
@@ -114,6 +114,12 @@ void Player::keyPressEvent(QKeyEvent *event)
                     //  igrac se vraca unazad
                     setPos(x()-100, 0);
                     m_view->horizontalScrollBar()->setValue(m_view->horizontalScrollBar()->value() - 100);
+                }
+
+                else if(item->type() == Flower::Type) {
+
+                    qDebug() << "Cvet!";
+                    score->increaseScoreFlowers();
                 }
             }
 
@@ -157,6 +163,21 @@ void Player::drawObsticles(int count){
     }
 
     m_scene->addLine(count*VIEW_WIDTH-100, 0, (count+1)*VIEW_WIDTH, 0, QPen(Qt::green, 1));
+
+}
+
+void Player::drawFlowers(int count){
+
+    int num_of_obsticles = 5;
+    for (int i=1; i<=num_of_obsticles; i++){
+        int size_y = rand() % MAX_HEIGHT_SIZE;
+        if (size_y < 150){
+            size_y = 150;
+        }
+        Flower *flower = new Flower(count*VIEW_WIDTH + i*100 + i*400/(num_of_obsticles-1), size_y+ rand() % 200);
+        qDebug() <<" POZ:" << count*VIEW_WIDTH + i*100 + i*400/(num_of_obsticles-1);
+        m_scene->addItem(flower);
+    }
 
 }
 
