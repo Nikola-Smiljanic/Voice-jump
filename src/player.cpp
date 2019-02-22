@@ -83,8 +83,8 @@ void Player::keyPressEvent(QKeyEvent *event)
 
             //  provera da li se igrac sudario s kaktusom ili sa cvetom
             const auto collision_obsticales = scene()->items(QPolygonF({ mapToScene(0, 0),
-                                                                         mapToScene(50, 0),
-                                                                         mapToScene(50, 50)
+                                                                         mapToScene(40, 0),
+                                                                         mapToScene(40, 40)
                                                                         }));
             for (auto item: collision_obsticales) {
                 if (item == this)
@@ -169,7 +169,7 @@ void Player::drawObsticles(int count){
 void Player::drawFlowers(int count){
 
     int num_of_obsticles = 5;
-    for (int i=1; i<=num_of_obsticles; i++){
+    for (int i=0; i<=num_of_obsticles; i++){
         int size_y = rand() % MAX_HEIGHT_SIZE;
         if (size_y < 150){
             size_y = 150;

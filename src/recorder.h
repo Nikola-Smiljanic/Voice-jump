@@ -22,7 +22,7 @@
 
 #define REAL 0
 #define IMAG 1
-#define SCALING_MAG 20
+#define SCALING_MAG 25
 
 class Recorder : public QObject
 {

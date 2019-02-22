@@ -141,11 +141,11 @@ void Recorder::processAudioBuffer(QAudioBuffer buffer)
     //  fft
     double magnitudes_max = fft_calculation(input, n);
 
-    //  prikazuje se magnitudes_max za ovaj QAudioBuffer, samo za proveru, obrisati na kraju:
-    if (buffer_count > 20)
-        m_scene->addLine(player_x + buffer_count, (magnitudes_max-start_magnitude)*SCALING_MAG,
-                         player_x + buffer_count, (magnitudes_max-start_magnitude)*SCALING_MAG + 1,
-                         QPen(Qt::cyan, 1));
+    //  prikazuje se magnitudes_max za ovaj QAudioBuffer, samo za proveru
+//    if (buffer_count > 20)
+//        m_scene->addLine(player_x + buffer_count, (magnitudes_max-start_magnitude)*SCALING_MAG,
+//                         player_x + buffer_count, (magnitudes_max-start_magnitude)*SCALING_MAG + 1,
+//                         QPen(Qt::cyan, 1));
 
 
     //  pamti se poslednjih 30 magnitudes_max
